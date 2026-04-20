@@ -33,9 +33,6 @@ public class Client {
     @NotNull
     private String password;
 
-    @OneToMany
-    private List<Order> orders;
-
     public Client(int id, String firstName, String lastName, String email, String phoneNumber, String password) {
         this.id = id;
         this.firstName = firstName;
@@ -93,13 +90,5 @@ public class Client {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
     }
 }
