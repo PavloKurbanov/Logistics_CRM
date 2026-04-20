@@ -1,0 +1,126 @@
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+# Compiled files
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# IDE files
+.idea/
+*.iml
+*.iws
+*.ipr
+.settings/
+.project
+.classpath
+.springBeans
+.sts4-cache
+
+# VS Code
+.vscode/
+
+# Eclipse
+bin/
+.settings/
+.metadata
+
+# NetBeans
+nbproject/
+nb-configuration.xml
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+gradle-app.setting
+**/build/
+gradle/
+gradlew
+gradlew.bat
+
+# Logs
+*.log
+logs/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Spring Boot specific
+application-local.properties
+application-dev.properties
+application-*.properties (але не application-default.properties)
+*.pid
+.spring-beans
+
+# Secrets & configs
+*.key
+*.p12
+*.jks
+*.pem
+.env
+.keystore
+
+# Docker
+docker-compose.override.yml
+*.log
