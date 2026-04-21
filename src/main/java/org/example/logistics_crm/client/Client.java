@@ -12,7 +12,7 @@ import java.util.List;
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @NotNull
     @NotBlank
@@ -25,6 +25,7 @@ public class Client {
     @NotNull
     @NotBlank
     @Email
+    @Column(unique = true)
     private String email;
 
     @NotNull
@@ -33,8 +34,7 @@ public class Client {
     @NotNull
     private String password;
 
-    public Client(int id, String firstName, String lastName, String email, String phoneNumber, String password) {
-        this.id = id;
+    public Client(String firstName, String lastName, String email, String phoneNumber, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -44,11 +44,11 @@ public class Client {
 
     public Client() {}
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
