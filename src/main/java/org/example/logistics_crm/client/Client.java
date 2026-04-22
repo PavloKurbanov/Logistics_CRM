@@ -4,9 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.example.logistics_crm.order.Order;
-
-import java.util.List;
 
 @Entity
 public class Client {
@@ -18,20 +15,18 @@ public class Client {
     @NotBlank
     private String firstName;
 
-    @NotNull
     @NotBlank
     private String lastName;
 
-    @NotNull
     @NotBlank
     @Email
     @Column(unique = true)
     private String email;
 
-    @NotNull
+    @NotBlank
     private String phoneNumber;
 
-    @NotNull
+    @NotBlank
     private String password;
 
     public Client(String firstName, String lastName, String email, String phoneNumber, String password) {

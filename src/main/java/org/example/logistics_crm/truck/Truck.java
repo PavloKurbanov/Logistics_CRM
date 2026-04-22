@@ -12,15 +12,12 @@ public class Truck {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     @NotBlank
     private String brand;
 
-    @NotNull
     @NotBlank
     private String model;
 
-    @NotNull
     @NotBlank
     @Column(unique = true)
     private String licenseNumber;

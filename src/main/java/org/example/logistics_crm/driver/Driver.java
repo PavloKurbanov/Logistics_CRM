@@ -2,8 +2,6 @@ package org.example.logistics_crm.driver;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import org.example.logistics_crm.truck.Truck;
 
 @Entity
 public class Driver {
@@ -11,21 +9,17 @@ public class Driver {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     @NotBlank
     private String firstName;
 
-    @NotNull
     @NotBlank
     private String lastName;
 
     private String licenseNumber;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     private DriverStatus driverStatus;
 
-    @NotNull
     @NotBlank
     private String phoneNumber;
 
