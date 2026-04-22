@@ -1,4 +1,4 @@
-package org.example.logistics_crm.driver;
+package org.example.logistics_crm.user;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "drivers")
-public class Driver {
+@Table(name = "users")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -23,18 +23,10 @@ public class Driver {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @NotBlank
-    @Column(name = "license_number", nullable = false, unique = true)
-    private String licenseNumber;
-
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "driver_status", nullable = false)
-    private DriverStatus driverStatus = DriverStatus.OFFLINE;
-
-    @NotBlank
-    @Column(name = "phone_number", nullable = false, unique = true)
-    private String phoneNumber;
+    @Column(name = "user_role", nullable = false)
+    private UserRole userRole =  UserRole.USER;
 
     @NotNull
     @Column(name = "create_date", nullable = false)
@@ -44,14 +36,10 @@ public class Driver {
     @Column(name = "update_date", nullable = false)
     private LocalDateTime updatedDate;
 
-    public Driver(String firstName, String lastName, String licenseNumber, String phoneNumber) {
+    public User(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.licenseNumber = licenseNumber;
-        this.phoneNumber = phoneNumber;
     }
-
-    public Driver() {}
 
     public Long getId() {
         return id;
@@ -77,28 +65,12 @@ public class Driver {
         this.lastName = lastName;
     }
 
-    public DriverStatus getDriverStatus() {
-        return driverStatus;
+    public UserRole getUserRole() {
+        return userRole;
     }
 
-    public void setDriverStatus(DriverStatus driverStatus) {
-        this.driverStatus = driverStatus;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getLicenseNumber() {
-        return licenseNumber;
-    }
-
-    public void setLicenseNumber(String licenseNumber) {
-        this.licenseNumber = licenseNumber;
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
     }
 
     public LocalDateTime getCreatedDate() {
@@ -131,8 +103,8 @@ public class Driver {
     @Override
     public boolean equals(Object object) {
         if (object == null || getClass() != object.getClass()) return false;
-        Driver driver = (Driver) object;
-        return Objects.equals(id, driver.id);
+        User user = (User) object;
+        return Objects.equals(id, user.id);
     }
 
     @Override
