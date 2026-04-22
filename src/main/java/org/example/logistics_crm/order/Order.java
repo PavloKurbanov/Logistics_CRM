@@ -2,12 +2,10 @@ package org.example.logistics_crm.order;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import org.example.logistics_crm.client.Client;
-import org.example.logistics_crm.driver.Driver;
-import org.example.logistics_crm.truck.Truck;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,12 +16,12 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     @NotBlank
+    @Column(unique = true)
     private String orderCode;
 
-    @NotNull
     @NotBlank
+    @Column(unique = true)
     private String trackingCode;
 
     @NotNull
@@ -37,11 +35,9 @@ public class Order {
     @ManyToOne(optional = false)
     private Client receiverClient;
 
-    @NotNull
     @NotBlank
     private String pickupAddress;
 
-    @NotNull
     @NotBlank
     private String deliveryAddress;
 
@@ -50,30 +46,23 @@ public class Order {
     private BigDecimal price;
 
     @NotNull
-    @Min(0)
+    @PositiveOrZero
     private Double weight;
 
     @NotNull
-    private LocalDateTime creationDate;
+    private LocalDateTime creationDate = LocalDateTime.now();
 
     @NotNull
     private LocalDateTime deliveryDate;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private OrderStatus orderStatus;
+    private OrderStatus orderStatus = OrderStatus.CREATED;
 
-    @ManyToOne
-    private Driver driver;
 
-    @ManyToOne
-    private Truck truck;
-
-    public Order(String orderCode, String trackingCode, Client senderClient,
+    public Order(Client senderClient,
                  Client receiverClient, String pickupAddress, String deliveryAddress,
                  BigDecimal price, Double weight, LocalDateTime deliveryDate) {
-        this.orderCode = orderCode;
-        this.trackingCode = trackingCode;
         this.senderClient = senderClient;
         this.receiverClient = receiverClient;
         this.pickupAddress = pickupAddress;
@@ -81,9 +70,6 @@ public class Order {
         this.price = price;
         this.weight = weight;
         this.deliveryDate = deliveryDate;
-        this.creationDate = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-        this.orderStatus = OrderStatus.CREATED;
     }
 
     public Order() {
@@ -191,21 +177,5 @@ public class Order {
 
     public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
-    }
-
-    public Driver getDriver() {
-        return driver;
-    }
-
-    public void setDriver(Driver driver) {
-        this.driver = driver;
-    }
-
-    public Truck getTruck() {
-        return truck;
-    }
-
-    public void setTruck(Truck truck) {
-        this.truck = truck;
     }
 }
