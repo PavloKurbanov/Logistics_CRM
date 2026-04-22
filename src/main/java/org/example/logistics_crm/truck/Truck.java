@@ -5,36 +5,55 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDateTime;
+
 @Entity
+@Table(name = "trucks")
 public class Truck {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @NotBlank
+    @Column(name = "brand", nullable = false)
     private String brand;
 
     @NotBlank
+    @Column(name = "model", nullable = false)
     private String model;
 
     @NotBlank
-    @Column(unique = true)
+    @Column(name = "license_number", unique = true, nullable = false)
     private String licenseNumber;
 
     @NotNull
     @Min(1)
+    @Column(name = "capacity", nullable = false)
     private Double capacity;
 
     @NotNull
     @Enumerated(EnumType.STRING)
+    @Column(name = "truck_status", nullable = false)
     private TruckStatus truckStatus = TruckStatus.AVAILABLE;
+
+    @NotNull
+    @Column(name = "create_date", nullable = false)
+    private LocalDateTime createdDate;
+
+    @NotNull
+    @Column(name = "update_date", nullable = false)
+    private LocalDateTime updatedDate;
 
     public Truck(String brand, String model, String licenseNumber, Double capacity) {
         this.brand = brand;
         this.model = model;
         this.licenseNumber = licenseNumber;
         this.capacity = capacity;
+    }
+
+    public Truck() {
     }
 
     public Long getId() {
@@ -83,5 +102,32 @@ public class Truck {
 
     public void setTruckStatus(TruckStatus truckStatus) {
         this.truckStatus = truckStatus;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public LocalDateTime getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(LocalDateTime updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
+    @PrePersist
+    protected void prePersist() {
+        this.createdDate = LocalDateTime.now();
+        this.updatedDate = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void preUpdate() {
+        this.updatedDate = LocalDateTime.now();
     }
 }

@@ -11,53 +11,65 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "orders")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @NotBlank
-    @Column(unique = true)
+    @Column(name = "order_code", unique = true, nullable = false)
     private String orderCode;
 
     @NotBlank
-    @Column(unique = true)
+    @Column(name = "tracking_code", unique = true, nullable = false)
     private String trackingCode;
 
     @NotNull
-    private LocalDateTime updatedAt;
-
-    @NotNull
     @ManyToOne(optional = false)
+    @JoinColumn(name = "sender_client_id", nullable = false)
     private Client senderClient;
 
     @NotNull
     @ManyToOne(optional = false)
+    @JoinColumn(name = "receiver_client_id", nullable = false)
     private Client receiverClient;
 
     @NotBlank
+    @Column(name = "pickup_address", nullable = false)
     private String pickupAddress;
 
     @NotBlank
+    @Column(name = "delivery_address", nullable = false)
     private String deliveryAddress;
 
     @NotNull
     @DecimalMin("0")
+    @Column(name = "price", nullable = false)
     private BigDecimal price;
 
     @NotNull
     @PositiveOrZero
+    @Column(name = "weight", nullable = false)
     private Double weight;
 
     @NotNull
-    private LocalDateTime creationDate = LocalDateTime.now();
-
-    @NotNull
+    @Column(name = "delivery_date", nullable = false)
     private LocalDateTime deliveryDate;
 
     @NotNull
     @Enumerated(EnumType.STRING)
+    @Column(name = "order_status", nullable = false)
     private OrderStatus orderStatus = OrderStatus.CREATED;
+
+    @NotNull
+    @Column(name = "creation_date", nullable = false)
+    private LocalDateTime creationDate;
+
+    @NotNull
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
 
     public Order(Client senderClient,
@@ -177,5 +189,16 @@ public class Order {
 
     public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    @PrePersist
+    protected void prePersist() {
+        this.creationDate = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }

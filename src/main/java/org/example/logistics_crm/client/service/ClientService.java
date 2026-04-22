@@ -1,4 +1,4 @@
-﻿package org.example.logistics_crm.client.service;
+package org.example.logistics_crm.client.service;
 
 import org.example.logistics_crm.client.Client;
 

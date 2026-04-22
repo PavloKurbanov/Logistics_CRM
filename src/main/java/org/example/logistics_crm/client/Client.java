@@ -5,29 +5,45 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDateTime;
+
 @Entity
+@Table(name = "clients")
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
-    @NotNull
     @NotBlank
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
     @NotBlank
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
     @NotBlank
     @Email
-    @Column(unique = true)
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
     @NotBlank
+    @Column(name = "phone_number", nullable = false, unique = true)
     private String phoneNumber;
 
     @NotBlank
+    @Column(name = "password", nullable = false)
     private String password;
+
+    @NotNull
+    @Column(name = "create_date", nullable = false)
+    private LocalDateTime createdDate;
+
+    @NotNull
+    @Column(name = "update_date", nullable = false)
+    private LocalDateTime updatedDate;
+
 
     public Client(String firstName, String lastName, String email, String phoneNumber, String password) {
         this.firstName = firstName;
@@ -37,7 +53,8 @@ public class Client {
         this.password = password;
     }
 
-    public Client() {}
+    public Client() {
+    }
 
     public Long getId() {
         return id;
@@ -85,5 +102,32 @@ public class Client {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public LocalDateTime getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(LocalDateTime updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
+    @PrePersist
+    protected void prePersist() {
+        this.createdDate = LocalDateTime.now();
+        this.updatedDate = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void preUpdate() {
+        this.updatedDate = LocalDateTime.now();
     }
 }
