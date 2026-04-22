@@ -26,7 +26,7 @@ public class User {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role", nullable = false)
-    private UserRole userRole =  UserRole.USER;
+    private UserRole userRole =  UserRole.OPERATOR;
 
     @NotNull
     @Column(name = "create_date", nullable = false)
