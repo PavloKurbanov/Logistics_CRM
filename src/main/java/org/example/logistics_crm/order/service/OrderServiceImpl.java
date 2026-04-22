@@ -8,7 +8,10 @@ import org.example.logistics_crm.order.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -32,8 +35,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order getOrderById(Long id) {
-        return null;
+    public Optional<Order> getOrderById(Long id) {
+        return Optional.empty();
     }
 
     @Override
@@ -44,5 +47,40 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order updateOrderStatus(Long orderId, OrderStatus orderStatus) {
         return null;
+    }
+
+    @Override
+    public List<Order> getOrdersByStatus(OrderStatus status) {
+        return List.of();
+    }
+
+    @Override
+    public List<Order> getOrdersByDeliveryDate(LocalDate date) {
+        return List.of();
+    }
+
+    @Override
+    public List<Order> getOrdersByCreationDate(LocalDate date) {
+        return List.of();
+    }
+
+    @Override
+    public List<Order> getOrdersByPriceBetween(BigDecimal min, BigDecimal max) {
+        return List.of();
+    }
+
+    @Override
+    public List<Order> getOrdersByWeightBetween(Double min, Double max) {
+        return List.of();
+    }
+
+    @Override
+    public List<Order> getOrdersByPickupAddress(String pickupAddress) {
+        return List.of();
+    }
+
+    @Override
+    public List<Order> getOrdersByDeliveryAddress(String deliveryAddress) {
+        return List.of();
     }
 }

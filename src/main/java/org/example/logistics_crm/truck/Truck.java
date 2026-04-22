@@ -28,14 +28,13 @@ public class Truck {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private TruckStatus truckStatus;
+    private TruckStatus truckStatus = TruckStatus.AVAILABLE;
 
     public Truck(String brand, String model, String licenseNumber, Double capacity) {
         this.brand = brand;
         this.model = model;
         this.licenseNumber = licenseNumber;
         this.capacity = capacity;
-        this.truckStatus = TruckStatus.AVAILABLE;
     }
 
     public Long getId() {
