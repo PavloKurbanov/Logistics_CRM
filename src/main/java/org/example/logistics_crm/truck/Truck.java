@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "trucks")
@@ -129,5 +130,17 @@ public class Truck {
     @PreUpdate
     protected void preUpdate() {
         this.updatedDate = LocalDateTime.now();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == null || getClass() != object.getClass()) return false;
+        Truck truck = (Truck) object;
+        return Objects.equals(id, truck.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
