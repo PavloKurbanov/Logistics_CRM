@@ -79,7 +79,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Transactional
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
@@ -151,7 +150,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> getOrdersByPickupAddress(String pickupAddress) {
-        if (pickupAddress == null) {
+        if (pickupAddress == null || pickupAddress.isEmpty()) {
             throw new IllegalArgumentException("Order pickup address can't be null");
         }
         return orderRepository.findByPickupAddress(pickupAddress);
@@ -159,7 +158,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> getOrdersByDeliveryAddress(String deliveryAddress) {
-        if (deliveryAddress == null) {
+        if (deliveryAddress == null || deliveryAddress.isEmpty()) {
             throw new IllegalArgumentException("Order delivery address can't be null");
         }
         return orderRepository.findByDeliveryAddress(deliveryAddress);
