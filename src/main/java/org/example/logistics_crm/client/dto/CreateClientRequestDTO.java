@@ -15,7 +15,6 @@ public record CreateClientRequestDTO(
         @NotBlank
         String phoneNumber,
         @NotBlank
-        @Valid
         String password
 ) {
 }
