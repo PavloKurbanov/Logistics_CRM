@@ -19,5 +19,7 @@ public interface ClientService {
 
     Optional<Client> findByPhone(String phone);
 
+    List<Client> findAll();
+
     List<Client> findByFirstNameAndLastName(String firstName, String lastName);
 }

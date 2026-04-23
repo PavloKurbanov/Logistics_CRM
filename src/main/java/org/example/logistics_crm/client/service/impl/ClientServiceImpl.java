@@ -38,14 +38,14 @@ public class ClientServiceImpl implements ClientService {
             throw new IllegalArgumentException("Phone number already exists");
         }
 
-        String encode = passwordEncoder.encode(client.password()); // matches() щоб перевірити пароль на правильність
+        String encodedPassword = passwordEncoder.encode(client.password()); // matches() щоб перевірити пароль на правильність
 
         return clientRepository.save(new Client(
                 client.firstName(),
                 client.lastName(),
                 client.email(),
                 client.phoneNumber(),
-                encode
+                encodedPassword
         ));
     }
 
@@ -71,6 +71,11 @@ public class ClientServiceImpl implements ClientService {
             throw new IllegalArgumentException("Last name can't be null");
         }
         return clientRepository.findByLastName(lastName);
+    }
+
+    @Override
+    public List<Client> findAll() {
+        return clientRepository.findAll();
     }
 
     @Override
