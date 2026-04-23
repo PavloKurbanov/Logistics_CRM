@@ -9,7 +9,8 @@ public enum OrderStatus {
     DELIVERED,
     CANCELLED,
     ON_HOLD,
-    DELAYED
+    DELAYED,
+    UNSUPPORTED
 }
 
 /*

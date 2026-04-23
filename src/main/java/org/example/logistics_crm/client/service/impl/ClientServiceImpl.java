@@ -52,7 +52,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Optional<Client> findByFirstNameAndLastName(String firstName, String lastName) {
-        return Optional.empty();
+    public List<Client> findByFirstNameAndLastName(String firstName, String lastName) {
+        return List.of();
     }
 }

@@ -8,26 +8,28 @@ import org.example.logistics_crm.order.OrderStatus;
 import org.example.logistics_crm.order.dto.CreateOrderRequestDTO;
 import org.example.logistics_crm.order.repository.OrderRepository;
 import org.example.logistics_crm.order.service.OrderService;
-import org.example.logistics_crm.order.validation.status.OrderStatusValidator;
+import org.example.logistics_crm.order.validation.OrderStatusValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
-    private final List<OrderStatusValidator> validators;
     private final ClientService clientService;
+    private final Map<OrderStatus, OrderStatusValidator> orderStatusValidators;
 
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository, List<OrderStatusValidator> validators, ClientService clientService) {
         this.orderRepository = orderRepository;
-        this.validators = validators;
         this.clientService = clientService;
+        this.orderStatusValidators = validators.stream().collect(Collectors.toMap(OrderStatusValidator::getOrderStatus, validator -> validator));
     }
 
     @Override
@@ -77,6 +79,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
@@ -90,6 +93,7 @@ public class OrderServiceImpl implements OrderService {
         if (orderStatus == null) {
             throw new IllegalArgumentException("Order status can't be null");
         }
+
         Order order = getOrderById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
 
@@ -99,9 +103,7 @@ public class OrderServiceImpl implements OrderService {
             );
         }
 
-        validators.stream()
-                .filter(v -> v.supports(orderStatus))
-                .forEach(v -> v.validate(order));
+        orderStatusValidators.getOrDefault(orderStatus, orderStatusValidators.get(OrderStatus.UNSUPPORTED)).validate(order);
 
         order.setOrderStatus(orderStatus);
         return orderRepository.save(order);

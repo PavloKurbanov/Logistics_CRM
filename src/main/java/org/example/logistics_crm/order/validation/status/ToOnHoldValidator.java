@@ -2,12 +2,15 @@
 
 import org.example.logistics_crm.order.Order;
 import org.example.logistics_crm.order.OrderStatus;
+import org.example.logistics_crm.order.validation.OrderStatusValidator;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ToOnHoldValidator implements OrderStatusValidator {
 
     @Override
-    public boolean supports(OrderStatus newStatus) {
-        return newStatus == OrderStatus.ON_HOLD;
+    public OrderStatus getOrderStatus() {
+        return OrderStatus.ON_HOLD;
     }
 
     @Override

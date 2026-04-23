@@ -1,10 +1,11 @@
-﻿package org.example.logistics_crm.order.validation.status;
+﻿package org.example.logistics_crm.order.validation;
 
 import org.example.logistics_crm.order.Order;
 import org.example.logistics_crm.order.OrderStatus;
 
 public interface OrderStatusValidator {
-    boolean supports(OrderStatus newStatus);
+
+    OrderStatus getOrderStatus();
 
     void validate(Order order);
 }
