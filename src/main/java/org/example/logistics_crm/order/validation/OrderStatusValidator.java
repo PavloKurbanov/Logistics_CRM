@@ -6,6 +6,5 @@ import org.example.logistics_crm.order.OrderStatus;
 public interface OrderStatusValidator {
 
     OrderStatus getOrderStatus();
-
     void validate(Order order);
 }
