@@ -25,8 +25,19 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public Order createOrder(CreateOrderRequestDTO request) {
-
-        return null;
+        if (request == null) {
+            throw new IllegalArgumentException("Помилка створення замовлення");
+        }
+        return orderRepository.save(
+                new Order(
+                        request.senderClientId(),
+                        request.receiverClientId(),
+                        request.pickupAddress(),
+                        request.deliveryAddress(),
+                        request.price(),
+                        request.weight(),
+                        request.deliveryDate()
+                ));
     }
 
     @Override
