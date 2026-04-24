@@ -2,6 +2,8 @@ package org.example.logistics_crm.driver;
 
 public enum DriverStatus {
     AVAILABLE,
-    BUSY,
-    OFFLINE
+    ON_DELIVERY,
+    ON_VACATION,
+    SICK_LEAVE,
+    INACTIVE
 }

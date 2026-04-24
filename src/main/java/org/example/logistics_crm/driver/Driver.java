@@ -30,7 +30,7 @@ public class Driver {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "driver_status", nullable = false)
-    private DriverStatus driverStatus = DriverStatus.OFFLINE;
+    private DriverStatus driverStatus = DriverStatus.INACTIVE;
 
     @NotBlank
     @Column(name = "phone_number", nullable = false, unique = true)
