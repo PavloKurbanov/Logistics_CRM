@@ -36,17 +36,17 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Order createOrder(CreateOrderRequestDTO request) {
         if (request == null) {
-            throw new IllegalArgumentException("Помилка створення замовлення");
+            throw new IllegalArgumentException("Order request can't be null");
         }
 
         Client senderClient = clientService.findById(request.senderClientId())
-                .orElseThrow(() -> new IllegalArgumentException("Sender client id not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Sender client not found"));
 
         Client receiverClient = clientService.findById(request.receiverClientId())
-                .orElseThrow(() -> new IllegalArgumentException("Receiver client id not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Receiver client not found"));
 
         if (senderClient.equals(receiverClient)) {
-            throw new IllegalArgumentException("Sender client and receiver client are the same");
+            throw new IllegalArgumentException("Sender and receiver clients must be different");
         }
 
         return orderRepository.save(
@@ -64,16 +64,16 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public void deleteOrder(Long orderId) {
-        if (orderId == null) {
-            throw new IllegalArgumentException("Введіть коректне ID замовлення");
+        if (orderId == null || orderId <= 0L) {
+            throw new IllegalArgumentException("Order id must be greater than 0");
         }
         orderRepository.deleteById(orderId);
     }
 
     @Override
     public Optional<Order> getOrderById(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Введіть коректне ID замовлення");
+        if (id == null ||  id <= 0L) {
+            throw new IllegalArgumentException("Order id must be greater than 0");
         }
         return orderRepository.findById(id);
     }
@@ -87,7 +87,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Order updateOrderStatus(Long orderId, OrderStatus orderStatus) {
         if (orderId == null) {
-            throw new IllegalArgumentException("Order ID can't ve null");
+            throw new IllegalArgumentException("Order ID can't be null");
         }
         if (orderStatus == null) {
             throw new IllegalArgumentException("Order status can't be null");

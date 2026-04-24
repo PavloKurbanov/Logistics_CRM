@@ -50,6 +50,14 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    public Client update(Client client) {
+        if(client == null) {
+            throw new IllegalArgumentException("Client can't be null");
+        }
+        return clientRepository.save(client);
+    }
+
+    @Override
     public Optional<Client> findById(Long clientId) {
         if (clientId == null) {
             throw new IllegalArgumentException("Client id can't be null");

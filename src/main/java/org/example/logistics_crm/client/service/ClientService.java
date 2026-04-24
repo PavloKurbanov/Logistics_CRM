@@ -9,6 +9,8 @@ import java.util.Optional;
 public interface ClientService {
     Client createClient(CreateClientRequestDTO client);
 
+    Client update(Client client);
+
     Optional<Client> findById(Long clientId);
 
     List<Client> findByFirstName(String firstName);
