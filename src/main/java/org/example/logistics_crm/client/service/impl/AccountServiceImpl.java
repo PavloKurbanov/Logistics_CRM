@@ -2,9 +2,9 @@
 
 import jakarta.transaction.Transactional;
 import org.example.logistics_crm.client.Client;
-import org.example.logistics_crm.client.dto.ChangeEmailRequestDTO;
-import org.example.logistics_crm.client.dto.ChangePasswordRequestDTO;
-import org.example.logistics_crm.client.dto.ChangePhoneNumberDTO;
+import org.example.logistics_crm.client.dto.ChangeClientEmailRequestDTO;
+import org.example.logistics_crm.client.dto.ChangeClientPasswordRequestDTO;
+import org.example.logistics_crm.client.dto.ChangeClientPhoneNumberDTO;
 import org.example.logistics_crm.client.service.AccountService;
 import org.example.logistics_crm.client.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,61 +27,61 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public Client changePassword(Long clientId, ChangePasswordRequestDTO changePasswordRequestDTO) {
-        Client client = validateClientAndPassword(clientId, changePasswordRequestDTO.oldPassword());
+    public Client changePassword(Long clientId, ChangeClientPasswordRequestDTO changeClientPasswordRequestDTO) {
+        Client client = validateClientAndPassword(clientId, changeClientPasswordRequestDTO.oldPassword());
 
-        if (!changePasswordRequestDTO.newPassword().equals(changePasswordRequestDTO.confirmNewPassword())) {
+        if (!changeClientPasswordRequestDTO.newPassword().equals(changeClientPasswordRequestDTO.confirmNewPassword())) {
             throw new IllegalArgumentException("Passwords do not match");
         }
 
-        if (passwordEncoder.matches(changePasswordRequestDTO.newPassword(), client.getPassword())) {
+        if (passwordEncoder.matches(changeClientPasswordRequestDTO.newPassword(), client.getPassword())) {
             throw new IllegalArgumentException("New password must be different from old password");
         }
 
-        if (client.getPassword().equals(changePasswordRequestDTO.newPassword())) {
+        if (client.getPassword().equals(changeClientPasswordRequestDTO.newPassword())) {
             throw new IllegalArgumentException("New password is the same as the old password");
         }
 
-        String encodedPassword = passwordEncoder.encode(changePasswordRequestDTO.newPassword());
+        String encodedPassword = passwordEncoder.encode(changeClientPasswordRequestDTO.newPassword());
         client.setPassword(encodedPassword);
         return clientService.update(client);
     }
 
     @Override
     @Transactional
-    public Client changeEmail(Long clientId, ChangeEmailRequestDTO changeEmailRequestDTO) {
-        Client client = validateClientAndPassword(clientId, changeEmailRequestDTO.currentPassword());
+    public Client changeEmail(Long clientId, ChangeClientEmailRequestDTO changeClientEmailRequestDTO) {
+        Client client = validateClientAndPassword(clientId, changeClientEmailRequestDTO.currentPassword());
 
-        if (client.getEmail().equals(changeEmailRequestDTO.newEmail())) {
+        if (client.getEmail().equals(changeClientEmailRequestDTO.newEmail())) {
             throw new IllegalArgumentException("New email is the same as the old email");
         }
 
-        Optional<Client> existingClient = clientService.findByEmail(changeEmailRequestDTO.newEmail());
+        Optional<Client> existingClient = clientService.findByEmail(changeClientEmailRequestDTO.newEmail());
 
         if (existingClient.isPresent() && !existingClient.get().getId().equals(client.getId())) {
             throw new IllegalArgumentException("Email already exists");
         }
 
-        client.setEmail(changeEmailRequestDTO.newEmail());
+        client.setEmail(changeClientEmailRequestDTO.newEmail());
         return clientService.update(client);
     }
 
     @Override
     @Transactional
-    public Client changePhoneNumber(Long clientId, ChangePhoneNumberDTO changePhoneNumberDTO) {
-        Client client = validateClientAndPassword(clientId, changePhoneNumberDTO.currentPassword());
+    public Client changePhoneNumber(Long clientId, ChangeClientPhoneNumberDTO changeClientPhoneNumberDTO) {
+        Client client = validateClientAndPassword(clientId, changeClientPhoneNumberDTO.currentPassword());
 
-        if (client.getPhoneNumber().equals(changePhoneNumberDTO.newPhoneNumber())) {
+        if (client.getPhoneNumber().equals(changeClientPhoneNumberDTO.newPhoneNumber())) {
             throw new IllegalArgumentException("New phone number is the same as the old phone number");
         }
 
-        Optional<Client> existingClient = clientService.findByPhone(changePhoneNumberDTO.newPhoneNumber());
+        Optional<Client> existingClient = clientService.findByPhone(changeClientPhoneNumberDTO.newPhoneNumber());
 
         if (existingClient.isPresent() && !existingClient.get().getId().equals(client.getId())) {
             throw new IllegalArgumentException("Phone number already exists");
         }
 
-        client.setPhoneNumber(changePhoneNumberDTO.newPhoneNumber());
+        client.setPhoneNumber(changeClientPhoneNumberDTO.newPhoneNumber());
         return clientService.update(client);
     }
 

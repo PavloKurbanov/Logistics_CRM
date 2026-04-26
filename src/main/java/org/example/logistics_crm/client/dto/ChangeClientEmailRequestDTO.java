@@ -2,7 +2,7 @@
 
 import jakarta.validation.constraints.NotBlank;
 
-public record ChangeEmailRequestDTO(
+public record ChangeClientEmailRequestDTO(
         @NotBlank
         String currentPassword,
 

@@ -1,14 +1,14 @@
 ﻿package org.example.logistics_crm.client.service;
 
 import org.example.logistics_crm.client.Client;
-import org.example.logistics_crm.client.dto.ChangeEmailRequestDTO;
-import org.example.logistics_crm.client.dto.ChangePasswordRequestDTO;
-import org.example.logistics_crm.client.dto.ChangePhoneNumberDTO;
+import org.example.logistics_crm.client.dto.ChangeClientEmailRequestDTO;
+import org.example.logistics_crm.client.dto.ChangeClientPasswordRequestDTO;
+import org.example.logistics_crm.client.dto.ChangeClientPhoneNumberDTO;
 
 public interface AccountService {
-    Client changePassword(Long clientId, ChangePasswordRequestDTO changePasswordRequestDTO);
+    Client changePassword(Long clientId, ChangeClientPasswordRequestDTO changeClientPasswordRequestDTO);
 
-    Client changeEmail(Long clientId, ChangeEmailRequestDTO changeEmailRequestDTO);
+    Client changeEmail(Long clientId, ChangeClientEmailRequestDTO changeClientEmailRequestDTO);
 
-    Client changePhoneNumber(Long clientId, ChangePhoneNumberDTO changePhoneNumberDTO);
+    Client changePhoneNumber(Long clientId, ChangeClientPhoneNumberDTO changeClientPhoneNumberDTO);
 }
