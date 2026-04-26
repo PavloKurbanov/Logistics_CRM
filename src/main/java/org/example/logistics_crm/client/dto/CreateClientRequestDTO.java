@@ -1,6 +1,5 @@
 package org.example.logistics_crm.client.dto;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
