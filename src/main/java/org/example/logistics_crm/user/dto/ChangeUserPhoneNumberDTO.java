@@ -1,8 +1,8 @@
-package org.example.logistics_crm.client.dto;
+package org.example.logistics_crm.user.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record ChangeClientPhoneNumberDTO(
+public record ChangeUserPhoneNumberDTO(
         @NotBlank
         String currentPassword,
 

@@ -1,12 +1,13 @@
-package org.example.logistics_crm.client.dto;
+package org.example.logistics_crm.user.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record ChangeClientPasswordRequestDTO(
+public record ChangeUserPasswordRequestDTO(
         @NotBlank
         String oldPassword,
         @NotBlank
         String newPassword,
         @NotBlank
-        String confirmNewPassword) {
+        String confirmNewPassword
+) {
 }

@@ -2,6 +2,7 @@ package org.example.logistics_crm.user.service;
 
 import org.example.logistics_crm.user.User;
 import org.example.logistics_crm.user.dto.CreateUserRequestDTO;
+import org.example.logistics_crm.user.dto.UpdateUserRequestDTO;
 import org.example.logistics_crm.user.dto.UserDetailsResponseDTO;
 import org.example.logistics_crm.user.dto.UserListResponseDTO;
 
@@ -11,7 +12,7 @@ import java.util.Optional;
 public interface UserService {
     User createUser(CreateUserRequestDTO createUserRequestDTO);
 
-    User updateUser(User user);
+    //User updateUser(Long Id, UpdateUserRequestDTO updateUserRequestDTO);
 
     UserDetailsResponseDTO findById(Long clientId);
 
@@ -19,9 +20,9 @@ public interface UserService {
 
     List<UserListResponseDTO> findByLastName(String lastName);
 
-    Optional<UserDetailsResponseDTO> findByEmail(String email);
+    UserDetailsResponseDTO findByEmail(String email);
 
-    Optional<UserDetailsResponseDTO> findByPhoneNumber(String phone);
+    UserDetailsResponseDTO findByPhoneNumber(String phone);
 
     List<UserListResponseDTO> findAll();
 

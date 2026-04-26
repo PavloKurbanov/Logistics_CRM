@@ -1,4 +1,4 @@
-﻿package org.example.logistics_crm.order.validation.status;
+package org.example.logistics_crm.order.validation.status;
 
 import org.example.logistics_crm.order.Order;
 import org.example.logistics_crm.order.OrderStatus;

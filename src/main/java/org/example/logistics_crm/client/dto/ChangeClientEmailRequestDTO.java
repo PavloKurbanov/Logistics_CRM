@@ -1,4 +1,4 @@
-﻿package org.example.logistics_crm.client.dto;
+package org.example.logistics_crm.client.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

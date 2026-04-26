@@ -1,11 +1,11 @@
-﻿package org.example.logistics_crm.client.service.impl;
+package org.example.logistics_crm.client.service.impl;
 
 import jakarta.transaction.Transactional;
 import org.example.logistics_crm.client.Client;
 import org.example.logistics_crm.client.dto.ChangeClientEmailRequestDTO;
 import org.example.logistics_crm.client.dto.ChangeClientPasswordRequestDTO;
 import org.example.logistics_crm.client.dto.ChangeClientPhoneNumberDTO;
-import org.example.logistics_crm.client.service.AccountService;
+import org.example.logistics_crm.client.service.AccountClientService;
 import org.example.logistics_crm.client.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,13 +14,13 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class AccountServiceImpl implements AccountService {
+public class AccountClientServiceImpl implements AccountClientService {
 
     private final ClientService clientService;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public AccountServiceImpl(ClientService clientService, PasswordEncoder passwordEncoder) {
+    public AccountClientServiceImpl(ClientService clientService, PasswordEncoder passwordEncoder) {
         this.clientService = clientService;
         this.passwordEncoder = passwordEncoder;
     }

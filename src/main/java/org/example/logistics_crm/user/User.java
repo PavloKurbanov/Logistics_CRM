@@ -26,12 +26,15 @@ public class User {
 
     @NotBlank
     @Email
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
     @NotBlank
+    @Column(name = "phone_number", nullable = false, unique = true)
     private String phoneNumber;
 
     @NotBlank
+    @Column(name = "password", nullable = false)
     private String password;
 
     @NotNull

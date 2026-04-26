@@ -113,7 +113,7 @@ public class OrderServiceImpl implements OrderService {
         if (status == null) {
             throw new IllegalArgumentException("Order status can't be null");
         }
-        return orderRepository.findByStatus(status);
+        return orderRepository.findByOrderStatus(status);
     }
 
     @Override
