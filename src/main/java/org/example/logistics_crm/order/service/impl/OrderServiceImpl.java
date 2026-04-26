@@ -6,17 +6,23 @@ import org.example.logistics_crm.client.service.ClientService;
 import org.example.logistics_crm.order.Order;
 import org.example.logistics_crm.order.OrderStatus;
 import org.example.logistics_crm.order.dto.request.CreateOrderRequestDTO;
+import org.example.logistics_crm.order.dto.request.OrderSearchRequestDTO;
+import org.example.logistics_crm.order.dto.response.OrderDetailsResponseDTO;
+import org.example.logistics_crm.order.dto.response.OrderListResponseDTO;
 import org.example.logistics_crm.order.repository.OrderRepository;
 import org.example.logistics_crm.order.service.OrderService;
+import org.example.logistics_crm.order.specification.OrderSpecification;
 import org.example.logistics_crm.order.validation.OrderStatusValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,7 +40,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public Order createOrder(CreateOrderRequestDTO request) {
+    public OrderDetailsResponseDTO createOrder(CreateOrderRequestDTO request) {
         if (request == null) {
             throw new IllegalArgumentException("Order request can't be null");
         }
@@ -47,8 +53,7 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalArgumentException("Sender and receiver clients must be different");
         }
 
-        return orderRepository.save(
-                new Order(
+        Order order = new Order(
                         senderClient,
                         receiverClient,
                         request.pickupAddress(),
@@ -56,7 +61,21 @@ public class OrderServiceImpl implements OrderService {
                         request.price(),
                         request.weight(),
                         request.deliveryDate()
-                ));
+                );
+
+        order.setOrderCode(generateOrderCode());
+        order.setTrackingCode(generateTrackingCode());
+
+        Order savedOrder = orderRepository.save(order);
+        return mapToDetailsResponseDTO(savedOrder);
+    }
+
+    @Override
+    public void updateOrder(Order order) {
+        if (order == null) {
+            throw new IllegalArgumentException("Order can't be null");
+        }
+        orderRepository.save(order);
     }
 
     @Override
@@ -65,25 +84,33 @@ public class OrderServiceImpl implements OrderService {
         if (orderId == null || orderId <= 0L) {
             throw new IllegalArgumentException("Order id must be greater than 0");
         }
-        orderRepository.deleteById(orderId);
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+
+        orderRepository.delete(order);
     }
 
     @Override
-    public Optional<Order> getOrderById(Long id) {
+    public OrderDetailsResponseDTO getOrderById(Long id) {
         if (id == null || id <= 0L) {
             throw new IllegalArgumentException("Order id must be greater than 0");
         }
-        return orderRepository.findById(id);
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        ;
+
+        return mapToDetailsResponseDTO(order);
     }
 
     @Override
-    public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+    public List<OrderListResponseDTO> getAllOrders() {
+        return mapToListResponseDTO(orderRepository.findAll());
     }
 
     @Override
     @Transactional
-    public Order updateOrderStatus(Long orderId, OrderStatus orderStatus) {
+    public OrderDetailsResponseDTO updateOrderStatus(Long orderId, OrderStatus orderStatus) {
         if (orderId == null) {
             throw new IllegalArgumentException("Order ID can't be null");
         }
@@ -91,7 +118,7 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalArgumentException("Order status can't be null");
         }
 
-        Order order = getOrderById(orderId)
+        Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
 
         if (order.getOrderStatus() == orderStatus) {
@@ -103,62 +130,63 @@ public class OrderServiceImpl implements OrderService {
         orderStatusValidators.getOrDefault(orderStatus, orderStatusValidators.get(OrderStatus.UNSUPPORTED)).validate(order);
 
         order.setOrderStatus(orderStatus);
-        return orderRepository.save(order);
+        Order updateOrder = orderRepository.save(order);
+        return mapToDetailsResponseDTO(updateOrder);
     }
 
     @Override
-    public List<Order> getOrdersByStatus(OrderStatus status) {
-        if (status == null) {
-            throw new IllegalArgumentException("Order status can't be null");
+    public List<OrderListResponseDTO> searchOrders(OrderSearchRequestDTO request) {
+        if(request == null) {
+            throw new IllegalArgumentException("Search request can't be null");
         }
-        return orderRepository.findByOrderStatus(status);
+
+        List<Order> all = orderRepository.findAll(OrderSpecification.search(request));
+
+        return mapToListResponseDTO(all);
     }
 
-    @Override
-    public List<Order> getOrdersByDeliveryDate(LocalDate date) {
-        if (date == null) {
-            throw new IllegalArgumentException("Order delivery date can't be null");
-        }
-        return orderRepository.findByDeliveryDate(date);
+    private List<OrderListResponseDTO> mapToListResponseDTO(List<Order> orders) {
+        return orders.stream()
+                .map(order -> new OrderListResponseDTO(
+                        order.getId(),
+                        order.getOrderCode(),
+                        order.getSenderClient().getFirstName() + " " + order.getSenderClient().getLastName(),
+                        order.getReceiverClient().getFirstName() + " " + order.getReceiverClient().getLastName(),
+                        order.getOrderStatus(),
+                        order.getPrice(),
+                        order.getDeliveryDate()
+                ))
+                .toList();
     }
 
-    @Override
-    public List<Order> getOrdersByCreationDate(LocalDate date) {
-        if (date == null) {
-            throw new IllegalArgumentException("Order creation date can't be null");
-        }
-        return orderRepository.findByCreationDate(date);
+    private OrderDetailsResponseDTO mapToDetailsResponseDTO(Order order) {
+        return new OrderDetailsResponseDTO(
+                order.getId(),
+                order.getOrderCode(),
+                order.getTrackingCode(),
+                order.getSenderClient().getId(),
+                order.getSenderClient().getFirstName() + " " + order.getSenderClient().getLastName(),
+                order.getReceiverClient().getId(),
+                order.getReceiverClient().getFirstName() + " " + order.getReceiverClient().getLastName(),
+                order.getPickupAddress(),
+                order.getDeliveryAddress(),
+                order.getPrice(),
+                order.getWeight(),
+                order.getDeliveryDate(),
+                order.getOrderStatus(),
+                order.getCreationDate(),
+                order.getUpdatedAt()
+        );
     }
 
-    @Override
-    public List<Order> getOrdersByPriceBetween(BigDecimal min, BigDecimal max) {
-        if (min == null || max == null) {
-            throw new IllegalArgumentException("Order price can't be null");
-        }
-        return orderRepository.findByPriceBetween(min, max);
+    private String generateOrderCode() {
+        return "ORD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
-    @Override
-    public List<Order> getOrdersByWeightBetween(Double min, Double max) {
-        if (min == null || max == null) {
-            throw new IllegalArgumentException("Order weight can't be null");
-        }
-        return orderRepository.findByWeightBetween(min, max);
-    }
-
-    @Override
-    public List<Order> getOrdersByPickupAddress(String pickupAddress) {
-        if (pickupAddress == null || pickupAddress.isEmpty()) {
-            throw new IllegalArgumentException("Order pickup address can't be null");
-        }
-        return orderRepository.findByPickupAddress(pickupAddress);
-    }
-
-    @Override
-    public List<Order> getOrdersByDeliveryAddress(String deliveryAddress) {
-        if (deliveryAddress == null || deliveryAddress.isEmpty()) {
-            throw new IllegalArgumentException("Order delivery address can't be null");
-        }
-        return orderRepository.findByDeliveryAddress(deliveryAddress);
+    private String generateTrackingCode() {
+        return "TRK-" + UUID.randomUUID()
+                .toString()
+                .substring(0, 8)
+                .toUpperCase();
     }
 }

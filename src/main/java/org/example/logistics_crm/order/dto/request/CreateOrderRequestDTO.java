@@ -1,17 +1,16 @@
 package org.example.logistics_crm.order.dto.request;
 
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record CreateOrderRequestDTO(
-        @NotBlank
+        @NotNull
+        @Positive
         Long senderClientId,
         @NotNull
+        @Positive
         Long receiverClientId,
         @NotBlank
         String pickupAddress,
@@ -21,7 +20,7 @@ public record CreateOrderRequestDTO(
         @DecimalMin("0")
         BigDecimal price,
         @NotNull
-        @Min(1)
+        @Positive
         Double weight,
         @NotNull
         LocalDateTime deliveryDate
