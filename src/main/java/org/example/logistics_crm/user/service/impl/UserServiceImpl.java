@@ -146,6 +146,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(Long userId) {
         if (userId == null || userId <= 0) {
             throw new IllegalArgumentException("User id must be greater than 0");

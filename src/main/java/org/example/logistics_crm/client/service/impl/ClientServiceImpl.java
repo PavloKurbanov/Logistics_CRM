@@ -147,6 +147,19 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional
+    public void deleteClient(Long clientId) {
+        if(clientId == null || clientId <= 0) {
+            throw new IllegalArgumentException("Client id must be greater than 0");
+        }
+
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new IllegalArgumentException("Client not found"));
+
+        clientRepository.delete(client);
+    }
+
+    @Override
     public Client getClientEntityById(Long clientId) {
         if (clientId == null || clientId <= 0) {
             throw new IllegalArgumentException("Client id must be greater than 0");

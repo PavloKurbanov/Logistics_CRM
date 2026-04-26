@@ -24,6 +24,8 @@ public interface ClientService {
 
     List<ClientListResponseDTO> findAll();
 
+    void deleteClient(Long clientId);
+
     List<ClientListResponseDTO> searchClients(String firstName, String lastName);
 
     boolean existsByEmailAndIdNot(String email, Long id);
