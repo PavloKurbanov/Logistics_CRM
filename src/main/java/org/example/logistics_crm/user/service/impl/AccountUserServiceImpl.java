@@ -1,10 +1,10 @@
 package org.example.logistics_crm.user.service.impl;
 
 import org.example.logistics_crm.user.User;
-import org.example.logistics_crm.user.dto.ChangeUserEmailRequestDTO;
-import org.example.logistics_crm.user.dto.ChangeUserPasswordRequestDTO;
-import org.example.logistics_crm.user.dto.ChangeUserPhoneNumberDTO;
-import org.example.logistics_crm.user.dto.UserDetailsResponseDTO;
+import org.example.logistics_crm.user.dto.request.ChangeUserEmailRequestDTO;
+import org.example.logistics_crm.user.dto.request.ChangeUserPasswordRequestDTO;
+import org.example.logistics_crm.user.dto.request.ChangeUserPhoneNumberDTO;
+import org.example.logistics_crm.user.dto.response.UserDetailsResponseDTO;
 import org.example.logistics_crm.user.service.AccountUserService;
 import org.example.logistics_crm.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

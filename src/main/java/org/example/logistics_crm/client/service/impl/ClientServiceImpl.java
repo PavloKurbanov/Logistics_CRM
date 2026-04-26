@@ -2,9 +2,9 @@ package org.example.logistics_crm.client.service.impl;
 
 import jakarta.transaction.Transactional;
 import org.example.logistics_crm.client.Client;
-import org.example.logistics_crm.client.dto.ClientDetailsResponseDTO;
-import org.example.logistics_crm.client.dto.ClientListResponseDTO;
-import org.example.logistics_crm.client.dto.CreateClientRequestDTO;
+import org.example.logistics_crm.client.dto.response.ClientDetailsResponseDTO;
+import org.example.logistics_crm.client.dto.response.ClientListResponseDTO;
+import org.example.logistics_crm.client.dto.request.CreateClientRequestDTO;
 import org.example.logistics_crm.client.repository.ClientRepository;
 import org.example.logistics_crm.client.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;

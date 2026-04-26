@@ -2,10 +2,10 @@ package org.example.logistics_crm.client.service.impl;
 
 import jakarta.transaction.Transactional;
 import org.example.logistics_crm.client.Client;
-import org.example.logistics_crm.client.dto.ChangeClientEmailRequestDTO;
-import org.example.logistics_crm.client.dto.ChangeClientPasswordRequestDTO;
-import org.example.logistics_crm.client.dto.ChangeClientPhoneNumberDTO;
-import org.example.logistics_crm.client.dto.ClientDetailsResponseDTO;
+import org.example.logistics_crm.client.dto.request.ChangeClientEmailRequestDTO;
+import org.example.logistics_crm.client.dto.request.ChangeClientPasswordRequestDTO;
+import org.example.logistics_crm.client.dto.request.ChangeClientPhoneNumberDTO;
+import org.example.logistics_crm.client.dto.response.ClientDetailsResponseDTO;
 import org.example.logistics_crm.client.service.AccountClientService;
 import org.example.logistics_crm.client.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;

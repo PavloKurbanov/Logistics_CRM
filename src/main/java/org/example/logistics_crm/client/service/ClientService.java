@@ -1,9 +1,9 @@
 package org.example.logistics_crm.client.service;
 
 import org.example.logistics_crm.client.Client;
-import org.example.logistics_crm.client.dto.ClientDetailsResponseDTO;
-import org.example.logistics_crm.client.dto.ClientListResponseDTO;
-import org.example.logistics_crm.client.dto.CreateClientRequestDTO;
+import org.example.logistics_crm.client.dto.response.ClientDetailsResponseDTO;
+import org.example.logistics_crm.client.dto.response.ClientListResponseDTO;
+import org.example.logistics_crm.client.dto.request.CreateClientRequestDTO;
 
 import java.util.List;
 

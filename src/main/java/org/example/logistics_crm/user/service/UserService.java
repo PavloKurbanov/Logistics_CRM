@@ -2,9 +2,9 @@ package org.example.logistics_crm.user.service;
 
 import org.example.logistics_crm.user.User;
 import org.example.logistics_crm.user.UserRole;
-import org.example.logistics_crm.user.dto.CreateUserRequestDTO;
-import org.example.logistics_crm.user.dto.UserDetailsResponseDTO;
-import org.example.logistics_crm.user.dto.UserListResponseDTO;
+import org.example.logistics_crm.user.dto.request.CreateUserRequestDTO;
+import org.example.logistics_crm.user.dto.response.UserDetailsResponseDTO;
+import org.example.logistics_crm.user.dto.response.UserListResponseDTO;
 
 import java.util.List;
 
