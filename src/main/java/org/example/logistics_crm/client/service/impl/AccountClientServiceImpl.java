@@ -38,10 +38,6 @@ public class AccountClientServiceImpl implements AccountClientService {
             throw new IllegalArgumentException("New password must be different from old password");
         }
 
-        if (client.getPassword().equals(changeClientPasswordRequestDTO.newPassword())) {
-            throw new IllegalArgumentException("New password is the same as the old password");
-        }
-
         String encodedPassword = passwordEncoder.encode(changeClientPasswordRequestDTO.newPassword());
         client.setPassword(encodedPassword);
         return clientService.update(client);

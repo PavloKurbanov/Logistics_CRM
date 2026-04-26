@@ -58,6 +58,9 @@ public class User {
         this.password = password;
     }
 
+    protected User() {
+    }
+
     public Long getId() {
         return id;
     }

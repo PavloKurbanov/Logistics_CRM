@@ -1,20 +1,19 @@
 package org.example.logistics_crm.user.service;
 
 import org.example.logistics_crm.user.User;
+import org.example.logistics_crm.user.UserRole;
 import org.example.logistics_crm.user.dto.CreateUserRequestDTO;
-import org.example.logistics_crm.user.dto.UpdateUserRequestDTO;
 import org.example.logistics_crm.user.dto.UserDetailsResponseDTO;
 import org.example.logistics_crm.user.dto.UserListResponseDTO;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface UserService {
     User createUser(CreateUserRequestDTO createUserRequestDTO);
 
-    //User updateUser(Long Id, UpdateUserRequestDTO updateUserRequestDTO);
+    void updateUser(User user);
 
-    UserDetailsResponseDTO findById(Long clientId);
+    UserDetailsResponseDTO findById(Long userId);
 
     List<UserListResponseDTO> findByFirstName(String firstName);
 
@@ -26,5 +25,15 @@ public interface UserService {
 
     List<UserListResponseDTO> findAll();
 
-    List<UserListResponseDTO> findByFirstNameAndLastName(String firstName, String lastName);
+    List<UserListResponseDTO> searchUsers(String firstName, String lastName);
+
+    List<UserListResponseDTO> findByUserRole(UserRole userRole);
+
+    void deleteUser(Long userId);
+
+    User getUserEntityById(Long userId);
+
+    boolean existsByEmail(String email, Long userId);
+
+    boolean existsByPhoneNumber(String phoneNumber, Long userId);
 }

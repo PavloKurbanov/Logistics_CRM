@@ -2,6 +2,7 @@ package org.example.logistics_crm.user.service.impl;
 
 import jakarta.transaction.Transactional;
 import org.example.logistics_crm.user.User;
+import org.example.logistics_crm.user.UserRole;
 import org.example.logistics_crm.user.dto.CreateUserRequestDTO;
 import org.example.logistics_crm.user.dto.UserDetailsResponseDTO;
 import org.example.logistics_crm.user.dto.UserListResponseDTO;
@@ -29,7 +30,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User createUser(CreateUserRequestDTO createUserRequestDTO) {
         if (createUserRequestDTO == null) {
-            throw new IllegalArgumentException("User can't be null");
+            throw new IllegalArgumentException("Create user request must not be null");
         }
 
         if (userRepository.findByEmail(createUserRequestDTO.email()).isPresent()) {
@@ -53,20 +54,19 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-//    @Override
-//    @Transactional
-//    public User updateUser(Long id, ) {
-//        if (id == null || id <= 0L) {
-//            throw new IllegalArgumentException("User can't be null");
-//        }
-//        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
-//        return userRepository.save(user);
-//    }
+    @Override
+    @Transactional
+    public void updateUser(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+        userRepository.save(user);
+    }
 
     @Override
-    public UserDetailsResponseDTO findById(Long clientId) {
+    public UserDetailsResponseDTO findById(Long userId) {
 
-        User user = userRepository.findById(clientId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         return mapToDetails(user);
@@ -126,7 +126,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserListResponseDTO> findByFirstNameAndLastName(String firstName, String lastName) {
+    public List<UserListResponseDTO> searchUsers(String firstName, String lastName) {
         if (firstName == null || lastName == null || firstName.isBlank() || lastName.isBlank()) {
             throw new IllegalArgumentException("First name and last name can't be null");
         }
@@ -134,6 +134,53 @@ public class UserServiceImpl implements UserService {
         List<User> byFirstNameAndLastName = userRepository.findByFirstNameAndLastName(firstName, lastName);
 
         return mapToList(byFirstNameAndLastName);
+    }
+
+    @Override
+    public List<UserListResponseDTO> findByUserRole(UserRole userRole) {
+        if (userRole == null) {
+            throw new IllegalArgumentException("User role can't be null");
+        }
+        List<User> byUserRole = userRepository.findByUserRole(userRole);
+        return mapToList(byUserRole);
+    }
+
+    @Override
+    public void deleteUser(Long userId) {
+        if (userId == null || userId <= 0) {
+            throw new IllegalArgumentException("User id must be greater than 0");
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        userRepository.delete(user);
+    }
+
+    @Override
+    public User getUserEntityById(Long userId) {
+        if (userId == null || userId <= 0) {
+            throw new IllegalArgumentException("User id must be greater than 0");
+        }
+
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    }
+
+    @Override
+    public boolean existsByEmail(String email, Long userId) {
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("Email can't be null");
+        }
+        if (userId == null || userId <= 0) {
+            throw new IllegalArgumentException("User id must be greater than 0");
+        }
+        return userRepository.existsByEmailAndIdNot(email, userId);
+    }
+
+    @Override
+    public boolean existsByPhoneNumber(String phoneNumber, Long userId) {
+        return userRepository.existsByPhoneNumberAndIdNot(phoneNumber, userId);
     }
 
     private UserDetailsResponseDTO mapToDetails(User user) {

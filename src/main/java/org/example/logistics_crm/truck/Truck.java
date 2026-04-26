@@ -54,7 +54,7 @@ public class Truck {
         this.capacity = capacity;
     }
 
-    public Truck() {
+    protected Truck() {
     }
 
     public Long getId() {
