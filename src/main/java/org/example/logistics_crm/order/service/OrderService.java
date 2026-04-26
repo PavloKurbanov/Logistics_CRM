@@ -2,35 +2,38 @@ package org.example.logistics_crm.order.service;
 
 import org.example.logistics_crm.order.Order;
 import org.example.logistics_crm.order.OrderStatus;
-import org.example.logistics_crm.order.dto.CreateOrderRequestDTO;
+import org.example.logistics_crm.order.dto.request.CreateOrderRequestDTO;
+import org.example.logistics_crm.order.dto.response.OrderDetailsResponseDTO;
+import org.example.logistics_crm.order.dto.response.OrderListResponseDTO;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public interface OrderService {
-    Order createOrder(CreateOrderRequestDTO request);
+    OrderDetailsResponseDTO createOrder(CreateOrderRequestDTO request);
+
+    void updateOrder(Order order);
 
     void deleteOrder(Long orderId);
 
-    Optional<Order> getOrderById(Long id);
+    OrderDetailsResponseDTO getOrderById(Long id);
 
-    List<Order> getAllOrders();
+    List<OrderListResponseDTO> getAllOrders();
 
-    Order updateOrderStatus(Long orderId, OrderStatus orderStatus);
+    OrderDetailsResponseDTO updateOrderStatus(Long orderId, OrderStatus orderStatus);
 
-    List<Order> getOrdersByStatus(OrderStatus status);
+    List<OrderListResponseDTO> getOrdersByStatus(OrderStatus status);
 
-    List<Order> getOrdersByDeliveryDate(LocalDate date);
+    List<OrderListResponseDTO> getOrdersByDeliveryDate(LocalDate date);
 
-    List<Order> getOrdersByCreationDate(LocalDate date);
+    List<OrderListResponseDTO> getOrdersByCreationDate(LocalDate date);
 
-    List<Order> getOrdersByPriceBetween(BigDecimal min, BigDecimal max);
+    List<OrderListResponseDTO> getOrdersByPriceBetween(BigDecimal min, BigDecimal max);
 
-    List<Order> getOrdersByWeightBetween(Double min, Double max);
+    List<OrderListResponseDTO> getOrdersByWeightBetween(Double min, Double max);
 
-    List<Order> getOrdersByPickupAddress(String pickupAddress);
+    List<OrderListResponseDTO> getOrdersByPickupAddress(String pickupAddress);
 
-    List<Order> getOrdersByDeliveryAddress(String deliveryAddress);
+    List<OrderListResponseDTO> getOrdersByDeliveryAddress(String deliveryAddress);
 }

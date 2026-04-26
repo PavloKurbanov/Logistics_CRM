@@ -1,4 +1,4 @@
-package org.example.logistics_crm.order.dto;
+package org.example.logistics_crm.order.dto.request;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;

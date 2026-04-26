@@ -12,6 +12,8 @@ import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
+    List<Order> findByFirstNameAndLastName(String firstName, String lastName);
+
     List<Order> findByOrderStatus(OrderStatus status);
 
     List<Order> findByDeliveryDate(LocalDate date);

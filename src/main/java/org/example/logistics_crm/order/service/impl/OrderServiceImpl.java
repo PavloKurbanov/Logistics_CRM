@@ -5,7 +5,7 @@ import org.example.logistics_crm.client.Client;
 import org.example.logistics_crm.client.service.ClientService;
 import org.example.logistics_crm.order.Order;
 import org.example.logistics_crm.order.OrderStatus;
-import org.example.logistics_crm.order.dto.CreateOrderRequestDTO;
+import org.example.logistics_crm.order.dto.request.CreateOrderRequestDTO;
 import org.example.logistics_crm.order.repository.OrderRepository;
 import org.example.logistics_crm.order.service.OrderService;
 import org.example.logistics_crm.order.validation.OrderStatusValidator;
