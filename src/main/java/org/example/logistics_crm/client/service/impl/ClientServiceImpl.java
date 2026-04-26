@@ -1,4 +1,4 @@
-﻿package org.example.logistics_crm.client.service.impl;
+package org.example.logistics_crm.client.service.impl;
 
 import jakarta.transaction.Transactional;
 import org.example.logistics_crm.client.Client;
@@ -34,7 +34,7 @@ public class ClientServiceImpl implements ClientService {
             throw new IllegalArgumentException("Email  already exists");
         }
 
-        if (clientRepository.findByPhone(client.phoneNumber()).isPresent()) {
+        if (clientRepository.findByPhoneNumber(client.phoneNumber()).isPresent()) {
             throw new IllegalArgumentException("Phone number already exists");
         }
 
@@ -99,7 +99,7 @@ public class ClientServiceImpl implements ClientService {
         if (phone == null || phone.isBlank()) {
             throw new IllegalArgumentException("Phone can't be null");
         }
-        return clientRepository.findByPhone(phone);
+        return clientRepository.findByPhoneNumber(phone);
     }
 
     @Override

@@ -72,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Optional<Order> getOrderById(Long id) {
-        if (id == null ||  id <= 0L) {
+        if (id == null || id <= 0L) {
             throw new IllegalArgumentException("Order id must be greater than 0");
         }
         return orderRepository.findById(id);
@@ -113,7 +113,7 @@ public class OrderServiceImpl implements OrderService {
         if (status == null) {
             throw new IllegalArgumentException("Order status can't be null");
         }
-        return orderRepository.findByStatus(status);
+        return orderRepository.findByOrderStatus(status);
     }
 
     @Override

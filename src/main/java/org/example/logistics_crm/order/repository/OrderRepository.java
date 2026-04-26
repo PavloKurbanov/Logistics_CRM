@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    List<Order> findByStatus(OrderStatus status);
+    List<Order> findByOrderStatus(OrderStatus status);
 
     List<Order> findByDeliveryDate(LocalDate date);
 

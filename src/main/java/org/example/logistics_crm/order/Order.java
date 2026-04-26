@@ -85,7 +85,7 @@ public class Order {
         this.deliveryDate = deliveryDate;
     }
 
-    public Order() {
+    protected Order() {
     }
 
     public Long getId() {

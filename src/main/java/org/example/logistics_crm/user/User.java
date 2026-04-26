@@ -1,6 +1,7 @@
 package org.example.logistics_crm.user;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -23,10 +24,23 @@ public class User {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
+    @NotBlank
+    @Email
+    @Column(name = "email", unique = true, nullable = false)
+    private String email;
+
+    @NotBlank
+    @Column(name = "phone_number", nullable = false, unique = true)
+    private String phoneNumber;
+
+    @NotBlank
+    @Column(name = "password", nullable = false)
+    private String password;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role", nullable = false)
-    private UserRole userRole =  UserRole.OPERATOR;
+    private UserRole userRole = UserRole.PENDING;
 
     @NotNull
     @Column(name = "create_date", nullable = false)
@@ -36,9 +50,15 @@ public class User {
     @Column(name = "update_date", nullable = false)
     private LocalDateTime updatedDate;
 
-    public User(String firstName, String lastName) {
+    public User(String firstName, String lastName, String email, String phoneNumber, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.password = password;
+    }
+
+    protected User() {
     }
 
     public Long getId() {
@@ -63,6 +83,30 @@ public class User {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public UserRole getUserRole() {

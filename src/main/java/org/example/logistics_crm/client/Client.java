@@ -54,7 +54,7 @@ public class Client {
         this.password = password;
     }
 
-    public Client() {
+    protected Client() {
     }
 
     public Long getId() {

@@ -51,7 +51,7 @@ public class Driver {
         this.phoneNumber = phoneNumber;
     }
 
-    public Driver() {}
+    protected Driver() {}
 
     public Long getId() {
         return id;
