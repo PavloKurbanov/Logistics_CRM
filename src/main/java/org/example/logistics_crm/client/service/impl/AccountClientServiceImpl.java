@@ -5,13 +5,12 @@ import org.example.logistics_crm.client.Client;
 import org.example.logistics_crm.client.dto.ChangeClientEmailRequestDTO;
 import org.example.logistics_crm.client.dto.ChangeClientPasswordRequestDTO;
 import org.example.logistics_crm.client.dto.ChangeClientPhoneNumberDTO;
+import org.example.logistics_crm.client.dto.ClientDetailsResponseDTO;
 import org.example.logistics_crm.client.service.AccountClientService;
 import org.example.logistics_crm.client.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class AccountClientServiceImpl implements AccountClientService {
@@ -27,7 +26,7 @@ public class AccountClientServiceImpl implements AccountClientService {
 
     @Override
     @Transactional
-    public Client changePassword(Long clientId, ChangeClientPasswordRequestDTO changeClientPasswordRequestDTO) {
+    public ClientDetailsResponseDTO changePassword(Long clientId, ChangeClientPasswordRequestDTO changeClientPasswordRequestDTO) {
         Client client = validateClientAndPassword(clientId, changeClientPasswordRequestDTO.oldPassword());
 
         if (!changeClientPasswordRequestDTO.newPassword().equals(changeClientPasswordRequestDTO.confirmNewPassword())) {
@@ -39,46 +38,45 @@ public class AccountClientServiceImpl implements AccountClientService {
         }
 
         String encodedPassword = passwordEncoder.encode(changeClientPasswordRequestDTO.newPassword());
+
         client.setPassword(encodedPassword);
-        return clientService.update(client);
+        clientService.update(client);
+        return mapToDetails(client);
     }
 
     @Override
     @Transactional
-    public Client changeEmail(Long clientId, ChangeClientEmailRequestDTO changeClientEmailRequestDTO) {
+    public ClientDetailsResponseDTO changeEmail(Long clientId, ChangeClientEmailRequestDTO changeClientEmailRequestDTO) {
         Client client = validateClientAndPassword(clientId, changeClientEmailRequestDTO.currentPassword());
 
         if (client.getEmail().equals(changeClientEmailRequestDTO.newEmail())) {
             throw new IllegalArgumentException("New email is the same as the old email");
         }
 
-        Optional<Client> existingClient = clientService.findByEmail(changeClientEmailRequestDTO.newEmail());
-
-        if (existingClient.isPresent() && !existingClient.get().getId().equals(client.getId())) {
+        if(clientService.existsByEmailAndIdNot(changeClientEmailRequestDTO.newEmail(), clientId)) {
             throw new IllegalArgumentException("Email already exists");
         }
 
         client.setEmail(changeClientEmailRequestDTO.newEmail());
-        return clientService.update(client);
+        clientService.update(client);
+        return mapToDetails(client);
     }
 
     @Override
     @Transactional
-    public Client changePhoneNumber(Long clientId, ChangeClientPhoneNumberDTO changeClientPhoneNumberDTO) {
+    public ClientDetailsResponseDTO changePhoneNumber(Long clientId, ChangeClientPhoneNumberDTO changeClientPhoneNumberDTO) {
         Client client = validateClientAndPassword(clientId, changeClientPhoneNumberDTO.currentPassword());
 
         if (client.getPhoneNumber().equals(changeClientPhoneNumberDTO.newPhoneNumber())) {
             throw new IllegalArgumentException("New phone number is the same as the old phone number");
         }
 
-        Optional<Client> existingClient = clientService.findByPhone(changeClientPhoneNumberDTO.newPhoneNumber());
-
-        if (existingClient.isPresent() && !existingClient.get().getId().equals(client.getId())) {
+        if(clientService.existsByPhoneNumberAndIdNot(changeClientPhoneNumberDTO.newPhoneNumber(), clientId)) {
             throw new IllegalArgumentException("Phone number already exists");
         }
-
         client.setPhoneNumber(changeClientPhoneNumberDTO.newPhoneNumber());
-        return clientService.update(client);
+        clientService.update(client);
+        return mapToDetails(client);
     }
 
     private Client validateClientAndPassword(Long clientId, String currentPassword) {
@@ -86,13 +84,24 @@ public class AccountClientServiceImpl implements AccountClientService {
             throw new IllegalArgumentException("Client id must be greater than 0");
         }
 
-        Client client = clientService.findById(clientId)
-                .orElseThrow(() -> new IllegalArgumentException("Client with id " + clientId + " not found"));
+        Client client = clientService.getClientEntityById(clientId);
 
         if (!passwordEncoder.matches(currentPassword, client.getPassword())) {
             throw new IllegalArgumentException("Current password is incorrect");
         }
 
         return client;
+    }
+
+    private ClientDetailsResponseDTO mapToDetails(Client client) {
+        return new ClientDetailsResponseDTO(
+                client.getId(),
+                client.getFirstName(),
+                client.getLastName(),
+                client.getEmail(),
+                client.getPhoneNumber(),
+                client.getCreatedDate(),
+                client.getUpdatedDate()
+        );
     }
 }

@@ -39,11 +39,9 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalArgumentException("Order request can't be null");
         }
 
-        Client senderClient = clientService.findById(request.senderClientId())
-                .orElseThrow(() -> new IllegalArgumentException("Sender client not found"));
+        Client senderClient = clientService.getClientEntityById(request.senderClientId());
 
-        Client receiverClient = clientService.findById(request.receiverClientId())
-                .orElseThrow(() -> new IllegalArgumentException("Receiver client not found"));
+        Client receiverClient = clientService.getClientEntityById(request.receiverClientId());
 
         if (senderClient.equals(receiverClient)) {
             throw new IllegalArgumentException("Sender and receiver clients must be different");

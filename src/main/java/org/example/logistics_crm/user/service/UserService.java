@@ -9,7 +9,7 @@ import org.example.logistics_crm.user.dto.UserListResponseDTO;
 import java.util.List;
 
 public interface UserService {
-    User createUser(CreateUserRequestDTO createUserRequestDTO);
+    UserDetailsResponseDTO  createUser(CreateUserRequestDTO createUserRequestDTO);
 
     void updateUser(User user);
 

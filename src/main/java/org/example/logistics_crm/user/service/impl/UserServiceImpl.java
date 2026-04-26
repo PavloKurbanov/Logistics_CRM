@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User createUser(CreateUserRequestDTO createUserRequestDTO) {
+    public UserDetailsResponseDTO  createUser(CreateUserRequestDTO createUserRequestDTO) {
         if (createUserRequestDTO == null) {
             throw new IllegalArgumentException("Create user request must not be null");
         }
@@ -43,15 +43,15 @@ public class UserServiceImpl implements UserService {
 
         String encodedPassword = passwordEncoder.encode(createUserRequestDTO.password());
 
-        User user = new User(
+        User user = userRepository.save(new User(
                 createUserRequestDTO.firstName(),
                 createUserRequestDTO.lastName(),
                 createUserRequestDTO.email(),
                 createUserRequestDTO.phoneNumber(),
-                encodedPassword
+                encodedPassword)
         );
 
-        return userRepository.save(user);
+        return mapToDetails(user);
     }
 
     @Override
