@@ -1,9 +1,9 @@
-package org.example.logistics_crm.user.dto;
+package org.example.logistics_crm.client.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public record CreateUserRequestDTO(
+public record CreateClientRequestDTO(
         @NotBlank
         String firstName,
         @NotBlank
@@ -14,5 +14,6 @@ public record CreateUserRequestDTO(
         @NotBlank
         String phoneNumber,
         @NotBlank
-        String password) {
+        String password
+) {
 }

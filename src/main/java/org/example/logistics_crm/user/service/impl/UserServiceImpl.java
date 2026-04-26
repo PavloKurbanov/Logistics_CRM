@@ -3,9 +3,9 @@ package org.example.logistics_crm.user.service.impl;
 import jakarta.transaction.Transactional;
 import org.example.logistics_crm.user.User;
 import org.example.logistics_crm.user.UserRole;
-import org.example.logistics_crm.user.dto.CreateUserRequestDTO;
-import org.example.logistics_crm.user.dto.UserDetailsResponseDTO;
-import org.example.logistics_crm.user.dto.UserListResponseDTO;
+import org.example.logistics_crm.user.dto.request.CreateUserRequestDTO;
+import org.example.logistics_crm.user.dto.response.UserDetailsResponseDTO;
+import org.example.logistics_crm.user.dto.response.UserListResponseDTO;
 import org.example.logistics_crm.user.repository.UserRepository;
 import org.example.logistics_crm.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User createUser(CreateUserRequestDTO createUserRequestDTO) {
+    public UserDetailsResponseDTO  createUser(CreateUserRequestDTO createUserRequestDTO) {
         if (createUserRequestDTO == null) {
             throw new IllegalArgumentException("Create user request must not be null");
         }
@@ -43,15 +43,15 @@ public class UserServiceImpl implements UserService {
 
         String encodedPassword = passwordEncoder.encode(createUserRequestDTO.password());
 
-        User user = new User(
+        User user = userRepository.save(new User(
                 createUserRequestDTO.firstName(),
                 createUserRequestDTO.lastName(),
                 createUserRequestDTO.email(),
                 createUserRequestDTO.phoneNumber(),
-                encodedPassword
+                encodedPassword)
         );
 
-        return userRepository.save(user);
+        return mapToDetails(user);
     }
 
     @Override

@@ -1,27 +1,34 @@
 package org.example.logistics_crm.client.service;
 
 import org.example.logistics_crm.client.Client;
-import org.example.logistics_crm.client.dto.CreateClientRequestDTO;
+import org.example.logistics_crm.client.dto.response.ClientDetailsResponseDTO;
+import org.example.logistics_crm.client.dto.response.ClientListResponseDTO;
+import org.example.logistics_crm.client.dto.request.CreateClientRequestDTO;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ClientService {
-    Client createClient(CreateClientRequestDTO client);
+    ClientDetailsResponseDTO createClient(CreateClientRequestDTO client);
 
-    Client update(Client client);
+    void update(Client client);
 
-    Optional<Client> findById(Long clientId);
+    ClientDetailsResponseDTO findById(Long clientId);
 
-    List<Client> findByFirstName(String firstName);
+    List<ClientListResponseDTO> findByFirstName(String firstName);
 
-    List<Client> findByLastName(String lastName);
+    List<ClientListResponseDTO> findByLastName(String lastName);
 
-    Optional<Client> findByEmail(String email);
+    ClientDetailsResponseDTO findByEmail(String email);
 
-    Optional<Client> findByPhone(String phone);
+    ClientDetailsResponseDTO findByPhone(String phone);
 
-    List<Client> findAll();
+    List<ClientListResponseDTO> findAll();
 
-    List<Client> findByFirstNameAndLastName(String firstName, String lastName);
+    List<ClientListResponseDTO> searchClients(String firstName, String lastName);
+
+    boolean existsByEmailAndIdNot(String email, Long id);
+
+    boolean existsByPhoneNumberAndIdNot(String phoneNumber, Long id);
+
+    Client getClientEntityById(Long clientId);
 }
