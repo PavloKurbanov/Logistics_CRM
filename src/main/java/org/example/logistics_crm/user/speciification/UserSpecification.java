@@ -51,6 +51,10 @@ public final class UserSpecification {
                 predicates.add(cb.lessThanOrEqualTo(root.get("createdDate"), request.createdTo()));
             }
 
+            if(predicates.isEmpty()){
+                cb.conjunction();
+            }
+
             return cb.and(predicates.toArray(Predicate[]::new));
         });
     }

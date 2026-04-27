@@ -26,7 +26,7 @@ public final class ClientSpecification {
 
             if (request.lastName() != null && !request.lastName().isBlank()) {
                 predicates.add(
-                        cb.like(cb.lower(root.get("lastname")),
+                        cb.like(cb.lower(root.get("lastName")),
                                 "%" + request.lastName().toLowerCase() + "%"
                         ));
             }
@@ -53,6 +53,10 @@ public final class ClientSpecification {
                 predicates.add(
                         cb.lessThanOrEqualTo(root.get("createdDate"), request.createdTo())
                 );
+            }
+
+            if(predicates.isEmpty()){
+                return cb.conjunction();
             }
 
             return cb.and(predicates.toArray(Predicate[]::new));
