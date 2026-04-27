@@ -2,11 +2,13 @@ package org.example.logistics_crm.client.service.impl;
 
 import jakarta.transaction.Transactional;
 import org.example.logistics_crm.client.Client;
+import org.example.logistics_crm.client.dto.request.ClientSearchRequestDTO;
 import org.example.logistics_crm.client.dto.response.ClientDetailsResponseDTO;
 import org.example.logistics_crm.client.dto.response.ClientListResponseDTO;
 import org.example.logistics_crm.client.dto.request.CreateClientRequestDTO;
 import org.example.logistics_crm.client.repository.ClientRepository;
 import org.example.logistics_crm.client.service.ClientService;
+import org.example.logistics_crm.client.specification.ClientSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,15 +33,15 @@ public class ClientServiceImpl implements ClientService {
             throw new IllegalArgumentException("Client can't be null");
         }
 
-        if (clientRepository.findByEmail(createClientRequestDTO.email()).isPresent()) {
+        if (clientRepository.existsByEmail(createClientRequestDTO.email())) {
             throw new IllegalArgumentException("Email  already exists");
         }
 
-        if (clientRepository.findByPhoneNumber(createClientRequestDTO.phoneNumber()).isPresent()) {
+        if (clientRepository.existsByPhoneNumber(createClientRequestDTO.phoneNumber())) {
             throw new IllegalArgumentException("Phone number already exists");
         }
 
-        String encodedPassword = passwordEncoder.encode(createClientRequestDTO.password()); // matches() щоб перевірити пароль на правильність
+        String encodedPassword = passwordEncoder.encode(createClientRequestDTO.password());
 
         Client client = clientRepository.save(new Client(
                 createClientRequestDTO.firstName(),
@@ -74,54 +76,18 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public List<ClientListResponseDTO> findByFirstName(String firstName) {
-        if (firstName == null || firstName.isBlank()) {
-            throw new IllegalArgumentException("First name can't be null");
-        }
-        return mapToList(clientRepository.findByFirstName(firstName));
-    }
-
-    @Override
-    public List<ClientListResponseDTO> findByLastName(String lastName) {
-        if (lastName == null || lastName.isBlank()) {
-            throw new IllegalArgumentException("Last name can't be null");
-        }
-        return mapToList(clientRepository.findByLastName(lastName));
-    }
-
-    @Override
     public List<ClientListResponseDTO> findAll() {
         return mapToList(clientRepository.findAll());
     }
 
     @Override
-    public ClientDetailsResponseDTO findByEmail(String email) {
-        if (email == null || email.isBlank()) {
-            throw new IllegalArgumentException("Email can't be null");
+    public List<ClientListResponseDTO> searchClient(ClientSearchRequestDTO requestDTO) {
+        if (requestDTO == null) {
+            throw new IllegalArgumentException("Client search request can't be null");
         }
-        Client client = clientRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Client not found"));
 
-        return mapToDetails(client);
-    }
-
-    @Override
-    public ClientDetailsResponseDTO findByPhone(String phone) {
-        if (phone == null || phone.isBlank()) {
-            throw new IllegalArgumentException("Phone can't be null");
-        }
-        Client client = clientRepository.findByPhoneNumber(phone)
-                .orElseThrow(() -> new IllegalArgumentException("Client not found"));
-
-        return mapToDetails(client);
-    }
-
-    @Override
-    public List<ClientListResponseDTO> searchClients(String firstName, String lastName) {
-        if (firstName == null || lastName == null || firstName.isBlank() || lastName.isBlank()) {
-            throw new IllegalArgumentException("First name and last name can't be null");
-        }
-        return mapToList(clientRepository.findByFirstNameAndLastName(firstName, lastName));
+        List<Client> all = clientRepository.findAll(ClientSpecification.search(requestDTO));
+        return mapToList(all);
     }
 
     @Override
@@ -149,7 +115,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @Transactional
     public void deleteClient(Long clientId) {
-        if(clientId == null || clientId <= 0) {
+        if (clientId == null || clientId <= 0) {
             throw new IllegalArgumentException("Client id must be greater than 0");
         }
 
@@ -174,8 +140,10 @@ public class ClientServiceImpl implements ClientService {
                 .map(client -> new ClientListResponseDTO(
                         client.getId(),
                         client.getFirstName(),
-                        client.getLastName())
-                ).toList();
+                        client.getLastName(),
+                        client.getEmail(),
+                        client.getPhoneNumber()
+                )).toList();
     }
 
     private ClientDetailsResponseDTO mapToDetails(Client client) {

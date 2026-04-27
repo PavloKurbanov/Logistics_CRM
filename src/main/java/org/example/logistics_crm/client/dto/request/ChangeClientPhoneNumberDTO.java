@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 public record ChangeClientPhoneNumberDTO(
         @NotBlank
         String currentPassword,
-
         @NotBlank
         String newPhoneNumber
 ) {
