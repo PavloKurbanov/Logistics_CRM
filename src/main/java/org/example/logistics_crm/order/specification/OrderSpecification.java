@@ -10,6 +10,8 @@ import java.util.List;
 
 public final class OrderSpecification {
 
+    private OrderSpecification() {}
+
     public static Specification<Order> search(OrderSearchRequestDTO request) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -105,7 +107,7 @@ public final class OrderSpecification {
                 );
             }
 
-            return cb.and(predicates.toArray(new Predicate[0]));
+            return cb.and(predicates.toArray(Predicate[]::new));
         };
     }
 }

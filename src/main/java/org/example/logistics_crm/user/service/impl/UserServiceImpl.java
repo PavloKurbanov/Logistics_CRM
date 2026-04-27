@@ -4,10 +4,12 @@ import jakarta.transaction.Transactional;
 import org.example.logistics_crm.user.User;
 import org.example.logistics_crm.user.UserRole;
 import org.example.logistics_crm.user.dto.request.CreateUserRequestDTO;
+import org.example.logistics_crm.user.dto.request.UserSearchRequestDTO;
 import org.example.logistics_crm.user.dto.response.UserDetailsResponseDTO;
 import org.example.logistics_crm.user.dto.response.UserListResponseDTO;
 import org.example.logistics_crm.user.repository.UserRepository;
 import org.example.logistics_crm.user.service.UserService;
+import org.example.logistics_crm.user.speciification.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,16 +30,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDetailsResponseDTO  createUser(CreateUserRequestDTO createUserRequestDTO) {
+    public UserDetailsResponseDTO createUser(CreateUserRequestDTO createUserRequestDTO) {
         if (createUserRequestDTO == null) {
             throw new IllegalArgumentException("Create user request must not be null");
         }
 
-        if (userRepository.findByEmail(createUserRequestDTO.email()).isPresent()) {
+        if (userRepository.existsByEmail(createUserRequestDTO.email())) {
             throw new IllegalArgumentException("Email already exists");
         }
 
-        if (userRepository.findByPhoneNumber(createUserRequestDTO.phoneNumber()).isPresent()) {
+        if (userRepository.existsByPhoneNumber(createUserRequestDTO.phoneNumber())) {
             throw new IllegalArgumentException("Phone number already exists");
         }
 
@@ -73,49 +75,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserListResponseDTO> findByFirstName(String firstName) {
-        if (firstName == null || firstName.isBlank()) {
-            throw new IllegalArgumentException("First name can't be null");
+    public List<UserListResponseDTO> findAll(UserSearchRequestDTO requestDTO) {
+        if (requestDTO == null) {
+            throw new IllegalArgumentException("User search request must not be null");
         }
-
-        List<User> byFirstName = userRepository.findByFirstName(firstName);
-
-        return mapToList(byFirstName);
-    }
-
-    @Override
-    public List<UserListResponseDTO> findByLastName(String lastName) {
-        if (lastName == null || lastName.isBlank()) {
-            throw new IllegalArgumentException("Last name can't be null");
-        }
-
-        List<User> byLastName = userRepository.findByLastName(lastName);
-
-        return mapToList(byLastName);
-    }
-
-    @Override
-    public UserDetailsResponseDTO findByEmail(String email) {
-        if (email == null || email.isBlank()) {
-            throw new IllegalArgumentException("Email can't be null");
-        }
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        return mapToDetails(user);
-    }
-
-    @Override
-    public UserDetailsResponseDTO findByPhoneNumber(String phone) {
-        if (phone == null || phone.isBlank()) {
-            throw new IllegalArgumentException("Phone number can't be null");
-        }
-
-        User user = userRepository.findByPhoneNumber(phone)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        return mapToDetails(user);
+        List<User> all = userRepository.findAll(UserSpecification.search(requestDTO));
+        return mapToList(all);
     }
 
     @Override
@@ -123,26 +88,6 @@ public class UserServiceImpl implements UserService {
         List<User> all = userRepository.findAll();
 
         return mapToList(all);
-    }
-
-    @Override
-    public List<UserListResponseDTO> searchUsers(String firstName, String lastName) {
-        if (firstName == null || lastName == null || firstName.isBlank() || lastName.isBlank()) {
-            throw new IllegalArgumentException("First name and last name can't be null");
-        }
-
-        List<User> byFirstNameAndLastName = userRepository.findByFirstNameAndLastName(firstName, lastName);
-
-        return mapToList(byFirstNameAndLastName);
-    }
-
-    @Override
-    public List<UserListResponseDTO> findByUserRole(UserRole userRole) {
-        if (userRole == null) {
-            throw new IllegalArgumentException("User role can't be null");
-        }
-        List<User> byUserRole = userRepository.findByUserRole(userRole);
-        return mapToList(byUserRole);
     }
 
     @Override
@@ -203,7 +148,9 @@ public class UserServiceImpl implements UserService {
                         user.getId(),
                         user.getFirstName(),
                         user.getLastName(),
-                        user.getUserRole()
+                        user.getUserRole(),
+                        user.getPhoneNumber(),
+                        user.getEmail()
                 ))
                 .toList();
     }
