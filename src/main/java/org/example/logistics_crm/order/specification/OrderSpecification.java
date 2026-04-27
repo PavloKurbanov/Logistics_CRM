@@ -107,6 +107,10 @@ public final class OrderSpecification {
                 );
             }
 
+            if(predicates.isEmpty()){
+                cb.conjunction();
+            }
+
             return cb.and(predicates.toArray(Predicate[]::new));
         };
     }
