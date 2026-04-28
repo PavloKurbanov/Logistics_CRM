@@ -10,6 +10,8 @@ import org.example.logistics_crm.repository.ClientRepository;
 import org.example.logistics_crm.specification.ClientSpecification;
 import org.example.logistics_crm.service.client.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -76,17 +78,17 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public List<ClientListResponseDTO> findAll() {
-        return mapToList(clientRepository.findAll());
+    public Page<ClientListResponseDTO> findAll(Pageable pageable) {
+        return mapToList(clientRepository.findAll(pageable));
     }
 
     @Override
-    public List<ClientListResponseDTO> searchClient(ClientSearchRequestDTO requestDTO) {
+    public Page<ClientListResponseDTO> searchClient(ClientSearchRequestDTO requestDTO, Pageable pageable) {
         if (requestDTO == null) {
             throw new IllegalArgumentException("Client search request can't be null");
         }
 
-        List<Client> all = clientRepository.findAll(ClientSpecification.search(requestDTO));
+        Page<Client> all = clientRepository.findAll(ClientSpecification.search(requestDTO), pageable);
         return mapToList(all);
     }
 
@@ -135,15 +137,15 @@ public class ClientServiceImpl implements ClientService {
                 .orElseThrow(() -> new IllegalArgumentException("Client not found"));
     }
 
-    private List<ClientListResponseDTO> mapToList(List<Client> clients) {
-        return clients.stream()
+    private Page<ClientListResponseDTO> mapToList(Page<Client> clientPage) {
+        return clientPage
                 .map(client -> new ClientListResponseDTO(
                         client.getId(),
                         client.getFirstName(),
                         client.getLastName(),
                         client.getEmail(),
                         client.getPhoneNumber()
-                )).toList();
+                ));
     }
 
     private ClientDetailsResponseDTO mapToDetails(Client client) {
