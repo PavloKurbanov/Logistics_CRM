@@ -1,5 +1,6 @@
 package org.example.logistics_crm.service.user.impl;
 
+import jakarta.transaction.Transactional;
 import org.example.logistics_crm.entity.user.User;
 import org.example.logistics_crm.service.user.AccountUserService;
 import org.example.logistics_crm.service.user.UserService;
@@ -24,6 +25,7 @@ public class AccountUserServiceImpl implements AccountUserService {
     }
 
     @Override
+    @Transactional
     public UserDetailsResponseDTO changePassword(Long userId, ChangeUserPasswordRequestDTO changeUserPasswordRequestDTO) {
         User user = validateUserAndPassword(userId, changeUserPasswordRequestDTO.oldPassword());
 
@@ -39,11 +41,11 @@ public class AccountUserServiceImpl implements AccountUserService {
 
         String encodedPassword = passwordEncoder.encode(newPassword);
         user.setPassword(encodedPassword);
-        userService.updateUser(user);
         return mapToDetails(user);
     }
 
     @Override
+    @Transactional
     public UserDetailsResponseDTO changeEmail(Long userId, ChangeUserEmailRequestDTO changeUserEmailRequestDTO) {
         User user = validateUserAndPassword(userId, changeUserEmailRequestDTO.currentPassword());
 
@@ -58,11 +60,11 @@ public class AccountUserServiceImpl implements AccountUserService {
         }
 
         user.setEmail(newEmail);
-        userService.updateUser(user);
         return mapToDetails(user);
     }
 
     @Override
+    @Transactional
     public UserDetailsResponseDTO changePhoneNumber(Long userId, ChangeUserPhoneNumberDTO changeUserPhoneNumberDTO) {
         User user = validateUserAndPassword(userId, changeUserPhoneNumberDTO.currentPassword());
 
@@ -77,7 +79,6 @@ public class AccountUserServiceImpl implements AccountUserService {
         }
 
         user.setPhoneNumber(newPhoneNumber);
-        userService.updateUser(user);
         return mapToDetails(user);
     }
 

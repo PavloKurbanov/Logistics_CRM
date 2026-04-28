@@ -40,7 +40,6 @@ public class AccountClientServiceImpl implements AccountClientService {
         String encodedPassword = passwordEncoder.encode(changeClientPasswordRequestDTO.newPassword());
 
         client.setPassword(encodedPassword);
-        clientService.update(client);
         return mapToDetails(client);
     }
 
@@ -58,7 +57,6 @@ public class AccountClientServiceImpl implements AccountClientService {
         }
 
         client.setEmail(changeClientEmailRequestDTO.newEmail());
-        clientService.update(client);
         return mapToDetails(client);
     }
 
@@ -75,7 +73,6 @@ public class AccountClientServiceImpl implements AccountClientService {
             throw new IllegalArgumentException("Phone number already exists");
         }
         client.setPhoneNumber(changeClientPhoneNumberDTO.newPhoneNumber());
-        clientService.update(client);
         return mapToDetails(client);
     }
 
