@@ -8,8 +8,6 @@ import org.example.logistics_crm.dto.user.response.UserListResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-
 public interface UserService {
     UserDetailsResponseDTO  createUser(CreateUserRequestDTO createUserRequestDTO);
 
@@ -21,7 +19,7 @@ public interface UserService {
 
     void deleteUser(Long userId);
 
-    Page<UserListResponseDTO> findAll(UserSearchRequestDTO requestDTO, Pageable pageable);
+    Page<UserListResponseDTO> searchUser(UserSearchRequestDTO requestDTO, Pageable pageable);
 
     User getUserEntityById(Long userId);
 

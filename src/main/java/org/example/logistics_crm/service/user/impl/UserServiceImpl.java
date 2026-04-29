@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserListResponseDTO> findAll(UserSearchRequestDTO requestDTO, Pageable pageable) {
+    public Page<UserListResponseDTO> searchUser(UserSearchRequestDTO requestDTO, Pageable pageable) {
         if (requestDTO == null) {
             throw new IllegalArgumentException("User search request must not be null");
         }
