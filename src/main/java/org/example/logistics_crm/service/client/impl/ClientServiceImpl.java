@@ -1,21 +1,19 @@
 package org.example.logistics_crm.service.client.impl;
 
 import jakarta.transaction.Transactional;
-import org.example.logistics_crm.entity.client.Client;
 import org.example.logistics_crm.dto.client.request.ClientSearchRequestDTO;
+import org.example.logistics_crm.dto.client.request.CreateClientRequestDTO;
 import org.example.logistics_crm.dto.client.response.ClientDetailsResponseDTO;
 import org.example.logistics_crm.dto.client.response.ClientListResponseDTO;
-import org.example.logistics_crm.dto.client.request.CreateClientRequestDTO;
+import org.example.logistics_crm.entity.client.Client;
 import org.example.logistics_crm.repository.ClientRepository;
-import org.example.logistics_crm.specification.ClientSpecification;
 import org.example.logistics_crm.service.client.ClientService;
+import org.example.logistics_crm.specification.ClientSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ClientServiceImpl implements ClientService {

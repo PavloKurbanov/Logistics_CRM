@@ -1,13 +1,13 @@
 package org.example.logistics_crm.service.order;
 
-import org.example.logistics_crm.entity.order.Order;
-import org.example.logistics_crm.entity.order.OrderStatus;
 import org.example.logistics_crm.dto.order.request.CreateOrderRequestDTO;
 import org.example.logistics_crm.dto.order.request.OrderSearchRequestDTO;
 import org.example.logistics_crm.dto.order.response.OrderDetailsResponseDTO;
 import org.example.logistics_crm.dto.order.response.OrderListResponseDTO;
-
-import java.util.List;
+import org.example.logistics_crm.entity.order.Order;
+import org.example.logistics_crm.entity.order.OrderStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface OrderService {
     OrderDetailsResponseDTO createOrder(CreateOrderRequestDTO request);
@@ -18,9 +18,9 @@ public interface OrderService {
 
     OrderDetailsResponseDTO getOrderById(Long id);
 
-    List<OrderListResponseDTO> getAllOrders();
+    Page<OrderListResponseDTO> getAllOrders(Pageable pageable);
 
-    List<OrderListResponseDTO> searchOrders(OrderSearchRequestDTO request);
+    Page<OrderListResponseDTO> searchOrders(OrderSearchRequestDTO request, Pageable pageable);
 
     OrderDetailsResponseDTO updateOrderStatus(Long orderId, OrderStatus orderStatus);
 }

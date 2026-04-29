@@ -20,14 +20,14 @@ public final class ClientSpecification {
             if (request.firstName() != null && !request.firstName().isBlank()) {
                 predicates.add(
                         cb.like(cb.lower(root.get("firstName")),
-                                "%" + request.firstName().toLowerCase() + "%"
+                                request.firstName().toLowerCase() + "%"
                         ));
             }
 
             if (request.lastName() != null && !request.lastName().isBlank()) {
                 predicates.add(
                         cb.like(cb.lower(root.get("lastName")),
-                                "%" + request.lastName().toLowerCase() + "%"
+                                request.lastName().toLowerCase() + "%"
                         ));
             }
 
@@ -55,7 +55,7 @@ public final class ClientSpecification {
                 );
             }
 
-            if(predicates.isEmpty()){
+            if (predicates.isEmpty()) {
                 return cb.conjunction();
             }
 

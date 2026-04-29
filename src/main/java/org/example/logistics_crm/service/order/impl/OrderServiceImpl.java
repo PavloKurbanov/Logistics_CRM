@@ -14,6 +14,8 @@ import org.example.logistics_crm.specification.OrderSpecification;
 import org.example.logistics_crm.service.order.OrderService;
 import org.example.logistics_crm.service.order.validation.OrderStatusValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,14 +52,14 @@ public class OrderServiceImpl implements OrderService {
         }
 
         Order order = new Order(
-                        senderClient,
-                        receiverClient,
-                        request.pickupAddress(),
-                        request.deliveryAddress(),
-                        request.price(),
-                        request.weight(),
-                        request.deliveryDate()
-                );
+                senderClient,
+                receiverClient,
+                request.pickupAddress(),
+                request.deliveryAddress(),
+                request.price(),
+                request.weight(),
+                request.deliveryDate()
+        );
 
         order.setOrderCode(generateOrderCode());
         order.setTrackingCode(generateTrackingCode());
@@ -100,8 +102,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderListResponseDTO> getAllOrders() {
-        return mapToListResponseDTO(orderRepository.findAll());
+    public Page<OrderListResponseDTO> getAllOrders(Pageable pageable) {
+        return mapToListResponseDTO(orderRepository.findAll(pageable));
     }
 
     @Override
@@ -131,18 +133,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderListResponseDTO> searchOrders(OrderSearchRequestDTO request) {
-        if(request == null) {
+    public Page<OrderListResponseDTO> searchOrders(OrderSearchRequestDTO request, Pageable pageable) {
+        if (request == null) {
             throw new IllegalArgumentException("Search request can't be null");
         }
 
-        List<Order> all = orderRepository.findAll(OrderSpecification.search(request));
+        Page<Order> all = orderRepository.findAll(OrderSpecification.search(request), pageable);
 
         return mapToListResponseDTO(all);
     }
 
-    private List<OrderListResponseDTO> mapToListResponseDTO(List<Order> orders) {
-        return orders.stream()
+    private Page<OrderListResponseDTO> mapToListResponseDTO(Page<Order> orders) {
+        return orders
                 .map(order -> new OrderListResponseDTO(
                         order.getId(),
                         order.getOrderCode(),
@@ -151,8 +153,7 @@ public class OrderServiceImpl implements OrderService {
                         order.getOrderStatus(),
                         order.getPrice(),
                         order.getDeliveryDate()
-                ))
-                .toList();
+                ));
     }
 
     private OrderDetailsResponseDTO mapToDetailsResponseDTO(Order order) {

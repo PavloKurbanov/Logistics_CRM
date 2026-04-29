@@ -10,5 +10,4 @@ public record ClientSearchRequestDTO(
         LocalDateTime createdFrom,
         LocalDateTime createdTo
 ) {
-
 }
