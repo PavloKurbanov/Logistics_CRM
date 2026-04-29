@@ -1,19 +1,19 @@
 package org.example.logistics_crm.service.user.impl;
 
 import jakarta.transaction.Transactional;
-import org.example.logistics_crm.entity.user.User;
-import org.example.logistics_crm.service.user.UserService;
 import org.example.logistics_crm.dto.user.request.CreateUserRequestDTO;
 import org.example.logistics_crm.dto.user.request.UserSearchRequestDTO;
 import org.example.logistics_crm.dto.user.response.UserDetailsResponseDTO;
 import org.example.logistics_crm.dto.user.response.UserListResponseDTO;
+import org.example.logistics_crm.entity.user.User;
 import org.example.logistics_crm.repository.UserRepository;
+import org.example.logistics_crm.service.user.UserService;
 import org.example.logistics_crm.specification.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -74,17 +74,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserListResponseDTO> findAll(UserSearchRequestDTO requestDTO) {
+    public Page<UserListResponseDTO> findAll(UserSearchRequestDTO requestDTO, Pageable pageable) {
         if (requestDTO == null) {
             throw new IllegalArgumentException("User search request must not be null");
         }
-        List<User> all = userRepository.findAll(UserSpecification.search(requestDTO));
+
+        Page<User> all = userRepository.findAll(UserSpecification.search(requestDTO), pageable);
         return mapToList(all);
     }
 
     @Override
-    public List<UserListResponseDTO> findAll() {
-        List<User> all = userRepository.findAll();
+    public Page<UserListResponseDTO> findAll(Pageable pageable) {
+        Page<User> all = userRepository.findAll(pageable);
 
         return mapToList(all);
     }
@@ -141,8 +142,8 @@ public class UserServiceImpl implements UserService {
         );
     }
 
-    private List<UserListResponseDTO> mapToList(List<User> users) {
-        return users.stream()
+    private Page<UserListResponseDTO> mapToList(Page<User> users) {
+        return users
                 .map(user -> new UserListResponseDTO(
                         user.getId(),
                         user.getFirstName(),
@@ -150,7 +151,6 @@ public class UserServiceImpl implements UserService {
                         user.getUserRole(),
                         user.getPhoneNumber(),
                         user.getEmail()
-                ))
-                .toList();
+                ));
     }
 }
