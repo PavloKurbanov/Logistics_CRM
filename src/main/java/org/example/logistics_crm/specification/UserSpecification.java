@@ -21,13 +21,14 @@ public final class UserSpecification {
                 predicates.add(
                         cb.like(
                                 cb.lower(root.get("firstName")),
-                                "%" + request.firstName().toLowerCase() + "%"
+                                request.firstName().toLowerCase() + "%"
                         ));
             }
 
             if (request.lastName() != null && !request.lastName().isBlank()) {
                 predicates.add(
-                        cb.like(cb.lower(root.get("lastName")), "%" + request.lastName().toLowerCase() + "%"
+                        cb.like(cb.lower(root.get("lastName")),
+                                request.lastName().toLowerCase() + "%"
                         ));
             }
 
@@ -51,7 +52,7 @@ public final class UserSpecification {
                 predicates.add(cb.lessThanOrEqualTo(root.get("createdDate"), request.createdTo()));
             }
 
-            if(predicates.isEmpty()){
+            if (predicates.isEmpty()) {
                 cb.conjunction();
             }
 
