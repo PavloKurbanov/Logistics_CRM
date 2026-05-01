@@ -1,21 +1,20 @@
 package org.example.logistics_crm.service.order.impl;
 
 import jakarta.transaction.Transactional;
-import org.example.logistics_crm.entity.client.Client;
-import org.example.logistics_crm.service.client.ClientService;
-import org.example.logistics_crm.entity.order.Order;
-import org.example.logistics_crm.entity.order.OrderStatus;
 import org.example.logistics_crm.dto.order.request.CreateOrderRequestDTO;
 import org.example.logistics_crm.dto.order.request.OrderSearchRequestDTO;
 import org.example.logistics_crm.dto.order.response.OrderDetailsResponseDTO;
 import org.example.logistics_crm.dto.order.response.OrderListResponseDTO;
+import org.example.logistics_crm.entity.client.Client;
+import org.example.logistics_crm.entity.order.Order;
+import org.example.logistics_crm.entity.order.OrderStatus;
 import org.example.logistics_crm.repository.OrderRepository;
-import org.example.logistics_crm.specification.OrderSpecification;
+import org.example.logistics_crm.service.client.ClientService;
 import org.example.logistics_crm.service.order.OrderService;
 import org.example.logistics_crm.service.order.validation.OrderStatusValidator;
+import org.example.logistics_crm.specification.OrderSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -97,14 +96,13 @@ public class OrderServiceImpl implements OrderService {
         }
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
-        ;
 
         return mapToDetailsResponseDTO(order);
     }
 
     @Override
     public Page<OrderListResponseDTO> getAllOrders(Pageable pageable) {
-        if(pageable == null) {
+        if (pageable == null) {
             throw new IllegalArgumentException("Pageable must not be null. Please provide pagination parameters.");
         }
         return mapToPageResponseDTO(orderRepository.findAll(pageable));
@@ -142,7 +140,7 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalArgumentException("Search request can't be null");
         }
 
-        if(pageable == null) {
+        if (pageable == null) {
             throw new IllegalArgumentException("Pageable must not be null. Please provide pagination parameters.");
         }
 
