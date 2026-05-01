@@ -79,15 +79,21 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("User search request must not be null");
         }
 
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable must not be null. Please provide pagination parameters.");
+        }
+
         Page<User> all = userRepository.findAll(UserSpecification.search(requestDTO), pageable);
         return mapToList(all);
     }
 
     @Override
     public Page<UserListResponseDTO> findAll(Pageable pageable) {
-        Page<User> all = userRepository.findAll(pageable);
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable must not be null. Please provide pagination parameters.");
+        }
 
-        return mapToList(all);
+        return mapToList(userRepository.findAll(pageable));
     }
 
     @Override

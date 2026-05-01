@@ -77,6 +77,10 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Page<ClientListResponseDTO> findAll(Pageable pageable) {
+        if(pageable == null) {
+            throw new IllegalArgumentException("Pageable must not be null. Please provide pagination parameters.");
+        }
+
         return mapToList(clientRepository.findAll(pageable));
     }
 
@@ -84,6 +88,10 @@ public class ClientServiceImpl implements ClientService {
     public Page<ClientListResponseDTO> searchClient(ClientSearchRequestDTO requestDTO, Pageable pageable) {
         if (requestDTO == null) {
             throw new IllegalArgumentException("Client search request can't be null");
+        }
+
+        if(pageable == null) {
+            throw new IllegalArgumentException("Pageable must not be null. Please provide pagination parameters.");
         }
 
         Page<Client> all = clientRepository.findAll(ClientSpecification.search(requestDTO), pageable);

@@ -15,6 +15,7 @@ import org.example.logistics_crm.service.order.OrderService;
 import org.example.logistics_crm.service.order.validation.OrderStatusValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -103,7 +104,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Page<OrderListResponseDTO> getAllOrders(Pageable pageable) {
-        return mapToListResponseDTO(orderRepository.findAll(pageable));
+        if(pageable == null) {
+            throw new IllegalArgumentException("Pageable must not be null. Please provide pagination parameters.");
+        }
+        return mapToPageResponseDTO(orderRepository.findAll(pageable));
     }
 
     @Override
@@ -138,12 +142,16 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalArgumentException("Search request can't be null");
         }
 
+        if(pageable == null) {
+            throw new IllegalArgumentException("Pageable must not be null. Please provide pagination parameters.");
+        }
+
         Page<Order> all = orderRepository.findAll(OrderSpecification.search(request), pageable);
 
-        return mapToListResponseDTO(all);
+        return mapToPageResponseDTO(all);
     }
 
-    private Page<OrderListResponseDTO> mapToListResponseDTO(Page<Order> orders) {
+    private Page<OrderListResponseDTO> mapToPageResponseDTO(Page<Order> orders) {
         return orders
                 .map(order -> new OrderListResponseDTO(
                         order.getId(),
