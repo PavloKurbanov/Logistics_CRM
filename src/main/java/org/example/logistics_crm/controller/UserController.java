@@ -61,21 +61,21 @@ public class UserController {
 
     @PutMapping("/{id}/password")
     @ResponseStatus(HttpStatus.OK)
-    public UserDetailsResponseDTO updatePassword(
+    public UserDetailsResponseDTO changePassword(
             @PathVariable Long id, @Valid @RequestBody ChangeUserPasswordRequestDTO changeUserPasswordRequestDTO) {
         return accountUserService.changePassword(id, changeUserPasswordRequestDTO);
     }
 
     @PutMapping("/{id}/email")
     @ResponseStatus(HttpStatus.OK)
-    public UserDetailsResponseDTO updateEmail(
+    public UserDetailsResponseDTO changeEmail(
             @PathVariable Long id, @Valid @RequestBody ChangeUserEmailRequestDTO changeUserEmailRequestDTO) {
         return accountUserService.changeEmail(id, changeUserEmailRequestDTO);
     }
 
     @PutMapping("/{id}/phoneNumber")
     @ResponseStatus(HttpStatus.OK)
-    public UserDetailsResponseDTO updatePhoneNumber(
+    public UserDetailsResponseDTO changePhoneNumber(
             @PathVariable Long id, @Valid @RequestBody ChangeUserPhoneNumberDTO changeUserPhoneNumberDTO) {
         return accountUserService.changePhoneNumber(id, changeUserPhoneNumberDTO);
     }
