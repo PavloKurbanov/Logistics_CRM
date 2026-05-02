@@ -9,6 +9,7 @@ import org.example.logistics_crm.entity.truck.Truck;
 import org.example.logistics_crm.entity.truck.TruckStatus;
 import org.example.logistics_crm.repository.TruckRepository;
 import org.example.logistics_crm.service.truck.TruckService;
+import org.example.logistics_crm.specification.TruckSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -58,7 +59,14 @@ public class TruckServiceImpl implements TruckService {
 
     @Override
     public Page<TruckListResponseDTO> searchTruck(SearchTruckRequestDTO requestDTO, Pageable pageable) {
-        return null;
+        if (requestDTO == null) {
+            throw new IllegalArgumentException("Truck search request can't be null");
+        }
+
+        if(pageable == null) {
+            throw new IllegalArgumentException("Pageable must not be null. Please provide pagination parameters.");
+        }
+        return pageToList(truckRepository.findAll(TruckSpecification.search(requestDTO), pageable));
     }
 
     @Override
