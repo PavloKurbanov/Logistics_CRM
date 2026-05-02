@@ -6,6 +6,7 @@ import org.example.logistics_crm.dto.truck.request.SearchTruckRequestDTO;
 import org.example.logistics_crm.dto.truck.response.TruckDetailsResponseDTO;
 import org.example.logistics_crm.dto.truck.response.TruckListResponseDTO;
 import org.example.logistics_crm.entity.truck.Truck;
+import org.example.logistics_crm.entity.truck.TruckStatus;
 import org.example.logistics_crm.repository.TruckRepository;
 import org.example.logistics_crm.service.truck.TruckService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +70,9 @@ public class TruckServiceImpl implements TruckService {
         Truck truck = truckRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Truck with id " + id + " does not exist"));
 
+        if (truck.getTruckStatus() != TruckStatus.AVAILABLE) {
+            throw new IllegalStateException("Truck with id " + id + " cannot be deleted because it is not available");
+        }
         truckRepository.delete(truck);
     }
 
