@@ -35,8 +35,8 @@ public class UserController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public UserDetailsResponseDTO findById(
-            @PathVariable Long userId) {
-        return userService.findById(userId);
+            @PathVariable("id") Long id) {
+        return userService.findById(id);
     }
 
     @GetMapping("/search")
@@ -55,28 +55,28 @@ public class UserController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void delete(
-            @PathVariable Long id) {
+            @PathVariable("id") Long id) {
         userService.deleteUser(id);
     }
 
     @PutMapping("/{id}/password")
     @ResponseStatus(HttpStatus.OK)
     public UserDetailsResponseDTO changePassword(
-            @PathVariable Long id, @Valid @RequestBody ChangeUserPasswordRequestDTO changeUserPasswordRequestDTO) {
+            @PathVariable("id") Long id, @Valid @RequestBody ChangeUserPasswordRequestDTO changeUserPasswordRequestDTO) {
         return accountUserService.changePassword(id, changeUserPasswordRequestDTO);
     }
 
     @PutMapping("/{id}/email")
     @ResponseStatus(HttpStatus.OK)
     public UserDetailsResponseDTO changeEmail(
-            @PathVariable Long id, @Valid @RequestBody ChangeUserEmailRequestDTO changeUserEmailRequestDTO) {
+            @PathVariable("id") Long id, @Valid @RequestBody ChangeUserEmailRequestDTO changeUserEmailRequestDTO) {
         return accountUserService.changeEmail(id, changeUserEmailRequestDTO);
     }
 
     @PutMapping("/{id}/phoneNumber")
     @ResponseStatus(HttpStatus.OK)
     public UserDetailsResponseDTO changePhoneNumber(
-            @PathVariable Long id, @Valid @RequestBody ChangeUserPhoneNumberDTO changeUserPhoneNumberDTO) {
+            @PathVariable("id") Long id, @Valid @RequestBody ChangeUserPhoneNumberDTO changeUserPhoneNumberDTO) {
         return accountUserService.changePhoneNumber(id, changeUserPhoneNumberDTO);
     }
 }

@@ -1,6 +1,7 @@
 package org.example.logistics_crm.service.user.impl;
 
-import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.example.logistics_crm.entity.user.User;
 import org.example.logistics_crm.service.user.AccountUserService;
 import org.example.logistics_crm.service.user.UserService;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class AccountUserServiceImpl implements AccountUserService {
 
@@ -27,6 +29,7 @@ public class AccountUserServiceImpl implements AccountUserService {
     @Override
     @Transactional
     public UserDetailsResponseDTO changePassword(Long userId, ChangeUserPasswordRequestDTO changeUserPasswordRequestDTO) {
+        log.debug("Attempting to change password for user with id: {}", userId);
         User user = validateUserAndPassword(userId, changeUserPasswordRequestDTO.oldPassword());
 
         String newPassword = changeUserPasswordRequestDTO.newPassword();
@@ -41,44 +44,49 @@ public class AccountUserServiceImpl implements AccountUserService {
 
         String encodedPassword = passwordEncoder.encode(newPassword);
         user.setPassword(encodedPassword);
+        log.info("Changing password for user with id: {} successful", userId);
         return mapToDetails(user);
     }
 
     @Override
     @Transactional
     public UserDetailsResponseDTO changeEmail(Long userId, ChangeUserEmailRequestDTO changeUserEmailRequestDTO) {
+        log.debug("Attempting to change email for user with id: {}", userId);
         User user = validateUserAndPassword(userId, changeUserEmailRequestDTO.currentPassword());
 
         String newEmail = changeUserEmailRequestDTO.newEmail();
 
-        if(user.getEmail().equals(newEmail)) {
+        if (user.getEmail().equals(newEmail)) {
             throw new IllegalArgumentException("New email is the same as current email");
         }
 
         if (userService.existsByEmail(newEmail, userId)) {
-            throw new IllegalArgumentException("Email already exists");
+            throw new IllegalArgumentException("Email " + newEmail + " already exists");
         }
 
         user.setEmail(newEmail);
+        log.info("Changing email for user with id: {} successful", userId);
         return mapToDetails(user);
     }
 
     @Override
     @Transactional
     public UserDetailsResponseDTO changePhoneNumber(Long userId, ChangeUserPhoneNumberDTO changeUserPhoneNumberDTO) {
+        log.debug("Attempting to change phone number for user with id: {}", userId);
         User user = validateUserAndPassword(userId, changeUserPhoneNumberDTO.currentPassword());
 
         String newPhoneNumber = changeUserPhoneNumberDTO.newPhoneNumber();
 
-        if(user.getPhoneNumber().equals(newPhoneNumber)) {
+        if (user.getPhoneNumber().equals(newPhoneNumber)) {
             throw new IllegalArgumentException("New phone number is the same as current phone number");
         }
 
-        if(userService.existsByPhoneNumber(newPhoneNumber, user.getId())) {
-            throw new IllegalArgumentException("Phone number already exists");
+        if (userService.existsByPhoneNumber(newPhoneNumber, user.getId())) {
+            throw new IllegalArgumentException("Phone number " + newPhoneNumber + " already exists");
         }
 
         user.setPhoneNumber(newPhoneNumber);
+        log.info("Changing phone number for user with id: {} successful", userId);
         return mapToDetails(user);
     }
 
@@ -90,7 +98,8 @@ public class AccountUserServiceImpl implements AccountUserService {
         User userEntityById = userService.getUserEntityById(userId);
 
         if (!passwordEncoder.matches(currentPassword, userEntityById.getPassword())) {
-            throw new IllegalArgumentException("Current password is incorrect");
+            log.warn("Security alert: Failed password change attempt for user ID: {} - incorrect current password", userId);
+            throw new IllegalArgumentException("Current password user " + userId + " is incorrect ");
         }
 
         return userEntityById;

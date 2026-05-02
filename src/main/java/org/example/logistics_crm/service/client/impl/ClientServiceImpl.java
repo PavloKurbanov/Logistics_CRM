@@ -1,6 +1,6 @@
 package org.example.logistics_crm.service.client.impl;
 
-import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.example.logistics_crm.dto.client.request.ClientSearchRequestDTO;
 import org.example.logistics_crm.dto.client.request.CreateClientRequestDTO;
 import org.example.logistics_crm.dto.client.response.ClientDetailsResponseDTO;
@@ -14,7 +14,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
@@ -33,12 +35,15 @@ public class ClientServiceImpl implements ClientService {
             throw new IllegalArgumentException("Client can't be null");
         }
 
+        log.debug("Attempting to create new client with email: {}, phoneNumber: {}"
+                , createClientRequestDTO.email(), createClientRequestDTO.phoneNumber());
+
         if (clientRepository.existsByEmail(createClientRequestDTO.email())) {
-            throw new IllegalArgumentException("Email  already exists");
+            throw new IllegalArgumentException("Email " + createClientRequestDTO.email() + " already exists");
         }
 
         if (clientRepository.existsByPhoneNumber(createClientRequestDTO.phoneNumber())) {
-            throw new IllegalArgumentException("Phone number already exists");
+            throw new IllegalArgumentException("Phone number " + createClientRequestDTO.phoneNumber() + " already exists");
         }
 
         String encodedPassword = passwordEncoder.encode(createClientRequestDTO.password());
@@ -50,7 +55,8 @@ public class ClientServiceImpl implements ClientService {
                 createClientRequestDTO.phoneNumber(),
                 encodedPassword
         ));
-
+        log.info("Client with email: {}, phoneNumber: {} successfully created with id: {}"
+                , createClientRequestDTO.email(), createClientRequestDTO.phoneNumber(), client.getId());
         return mapToDetails(client);
     }
 
@@ -65,40 +71,45 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ClientDetailsResponseDTO findById(Long clientId) {
         if (clientId == null || clientId <= 0) {
             throw new IllegalArgumentException("Client id must be greater than 0");
         }
+        log.debug("Fetching client with id: {}", clientId);
         Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new IllegalArgumentException("Client not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Client with ID: " + clientId + " not found"));
 
         return mapToDetails(client);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<ClientListResponseDTO> findAll(Pageable pageable) {
-        if(pageable == null) {
+        if (pageable == null) {
             throw new IllegalArgumentException("Pageable must not be null. Please provide pagination parameters.");
         }
-
+        log.debug("Fetching all clients page request:  {}", pageable);
         return mapToList(clientRepository.findAll(pageable));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<ClientListResponseDTO> searchClient(ClientSearchRequestDTO requestDTO, Pageable pageable) {
         if (requestDTO == null) {
             throw new IllegalArgumentException("Client search request can't be null");
         }
 
-        if(pageable == null) {
+        if (pageable == null) {
             throw new IllegalArgumentException("Pageable must not be null. Please provide pagination parameters.");
         }
-
+        log.debug("Fetching all clients with criteria:  {}", requestDTO);
         Page<Client> all = clientRepository.findAll(ClientSpecification.search(requestDTO), pageable);
         return mapToList(all);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean existsByEmailAndIdNot(String email, Long id) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("Email can't be null");
@@ -110,6 +121,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean existsByPhoneNumberAndIdNot(String phoneNumber, Long id) {
         if (phoneNumber == null || phoneNumber.isBlank()) {
             throw new IllegalArgumentException("Phone number can't be null");
@@ -126,21 +138,23 @@ public class ClientServiceImpl implements ClientService {
         if (clientId == null || clientId <= 0) {
             throw new IllegalArgumentException("Client id must be greater than 0");
         }
-
+        log.debug("Attempting to delete client with id: {}", clientId);
         Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new IllegalArgumentException("Client not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Client with ID: " + clientId + " not found"));
 
         clientRepository.delete(client);
+        log.info("Client with id: {} successfully deleted", clientId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Client getClientEntityById(Long clientId) {
         if (clientId == null || clientId <= 0) {
             throw new IllegalArgumentException("Client id must be greater than 0");
         }
 
         return clientRepository.findById(clientId)
-                .orElseThrow(() -> new IllegalArgumentException("Client not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Client with ID: " + clientId + " not found"));
     }
 
     private Page<ClientListResponseDTO> mapToList(Page<Client> clientPage) {

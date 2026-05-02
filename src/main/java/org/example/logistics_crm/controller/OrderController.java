@@ -23,6 +23,13 @@ public class OrderController {
         this.orderService = orderService;
     }
 
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public OrderDetailsResponseDTO getOrderById(
+            @PathVariable("id") Long id) {
+        return orderService.getOrderById(id);
+    }
+
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public OrderDetailsResponseDTO createOrder(
@@ -39,7 +46,14 @@ public class OrderController {
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
     public Page<OrderListResponseDTO> searchOrders(
-            @ModelAttribute OrderSearchRequestDTO request, Pageable pageable){
+            @ModelAttribute OrderSearchRequestDTO request, Pageable pageable) {
         return orderService.searchOrders(request, pageable);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteOrder(
+            @PathVariable("id") Long id) {
+        orderService.deleteOrder(id);
     }
 }
