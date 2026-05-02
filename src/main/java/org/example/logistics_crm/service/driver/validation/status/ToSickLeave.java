@@ -3,7 +3,9 @@ package org.example.logistics_crm.service.driver.validation.status;
 import org.example.logistics_crm.entity.driver.Driver;
 import org.example.logistics_crm.entity.driver.DriverStatus;
 import org.example.logistics_crm.service.driver.validation.DriverStatusValidator;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ToSickLeave implements DriverStatusValidator {
 
     @Override
