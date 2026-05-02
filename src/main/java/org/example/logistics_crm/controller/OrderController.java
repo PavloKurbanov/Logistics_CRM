@@ -38,8 +38,8 @@ public class OrderController {
 
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
-    public Page<OrderListResponseDTO> getOrders(
-            @RequestBody @Valid OrderSearchRequestDTO request, Pageable pageable){
+    public Page<OrderListResponseDTO> searchOrders(
+            @ModelAttribute OrderSearchRequestDTO request, Pageable pageable){
         return orderService.searchOrders(request, pageable);
     }
 }
