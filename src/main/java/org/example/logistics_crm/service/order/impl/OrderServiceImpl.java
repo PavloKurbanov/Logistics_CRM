@@ -114,10 +114,8 @@ public class OrderServiceImpl implements OrderService {
         log.debug("Fetching order with id: {} for getting order", id);
 
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.warn("Failed to find order. Order with id {} does not exist", id);
-                    return new IllegalArgumentException("Order not found with id: " + id);
-                });
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Order not found with id: " + id));
 
         return mapToDetailsResponseDTO(order);
     }
@@ -144,10 +142,8 @@ public class OrderServiceImpl implements OrderService {
         log.debug("Attempting to update order status for order with id: {} to status: {}", orderId, orderStatus);
 
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> {
-                    log.warn("Failed to find order with id: {}", orderId);
-                    return new IllegalArgumentException("Order not found with id: " + orderId);
-                });
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Order not found with id: " + orderId));
 
         if (order.getOrderStatus() == orderStatus) {
             throw new IllegalStateException(

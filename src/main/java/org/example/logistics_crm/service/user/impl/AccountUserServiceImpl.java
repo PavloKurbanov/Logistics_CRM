@@ -98,7 +98,6 @@ public class AccountUserServiceImpl implements AccountUserService {
         User userEntityById = userService.getUserEntityById(userId);
 
         if (!passwordEncoder.matches(currentPassword, userEntityById.getPassword())) {
-            log.warn("Security alert: Failed password change attempt for user ID: {} - incorrect current password", userId);
             throw new IllegalArgumentException("Current password user " + userId + " is incorrect ");
         }
 

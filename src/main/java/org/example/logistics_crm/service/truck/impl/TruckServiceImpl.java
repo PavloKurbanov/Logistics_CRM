@@ -34,10 +34,9 @@ public class TruckServiceImpl implements TruckService {
             throw new IllegalArgumentException("Create truck request must not be null");
         }
 
-        log.info("Attempting to create new truck with license number: {}", request.licenseNumber());
+        log.debug("Attempting to create new truck with license number: {}", request.licenseNumber());
 
         if (existsByLicenseNumber(request.licenseNumber())) {
-            log.warn("Failed to create new truck. Truck with license number {} already exists", request.licenseNumber());
             throw new IllegalArgumentException("Truck with license number " + request.licenseNumber() + " already exists");
         }
 
@@ -62,10 +61,8 @@ public class TruckServiceImpl implements TruckService {
         log.debug("Fetching truck with id: {}", id);
 
         Truck truck = truckRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.warn("Failed to find truck. Truck with id {} does not exist", id);
-                    return new IllegalArgumentException("Truck with id " + id + " does not exist");
-                });
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Truck with id " + id + " does not exist"));
 
         return pageToDetails(truck);
     }
@@ -105,10 +102,9 @@ public class TruckServiceImpl implements TruckService {
         log.debug("Attempting to delete truck with id: {}", id);
 
         Truck truck = truckRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.warn("Failed to delete truck. Truck with id {} does not exist", id);
-                    return new IllegalArgumentException("Truck with id " + id + " does not exist");
-                });
+                .orElseThrow(() ->
+
+                        new IllegalArgumentException("Truck with id " + id + " does not exist"));
 
         if (truck.getTruckStatus() != TruckStatus.AVAILABLE) {
             throw new IllegalStateException("Truck with id " + id + " cannot be deleted because it is not available");

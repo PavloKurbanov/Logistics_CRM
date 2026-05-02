@@ -37,17 +37,15 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Create user request must not be null");
         }
 
-        log.info("Attempting to create new user with email: {}, phoneNumber: {}"
+        log.debug("Attempting to create new user with email: {}, phoneNumber: {}"
                 , createUserRequestDTO.email(), createUserRequestDTO.phoneNumber());
 
         if (userRepository.existsByEmail(createUserRequestDTO.email())) {
-            log.warn("Failed to create new user. Email {} already exists", createUserRequestDTO.email());
-            throw new IllegalArgumentException("Email already exists");
+            throw new IllegalArgumentException("Email " + createUserRequestDTO.email() + " already exists");
         }
 
         if (userRepository.existsByPhoneNumber(createUserRequestDTO.phoneNumber())) {
-            log.warn("Failed to create new user. Phone {} number already exists", createUserRequestDTO.phoneNumber());
-            throw new IllegalArgumentException("Phone number already exists");
+            throw new IllegalArgumentException("Phone number " + createUserRequestDTO.phoneNumber() + " already exists");
         }
 
         String encodedPassword = passwordEncoder.encode(createUserRequestDTO.password());
@@ -84,10 +82,7 @@ public class UserServiceImpl implements UserService {
         log.debug("Fetching user with id: {}", userId);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> {
-                    log.warn("User with id: {} not found", userId);
-                    return new IllegalArgumentException("User not found");
-                });
+                .orElseThrow(() -> new IllegalArgumentException("User with ID: " + userId + " not found"));
 
         return mapToDetails(user);
     }
@@ -126,13 +121,10 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("User id must be greater than 0");
         }
 
-        log.info("Attempting to delete user with id: {}", userId);
+        log.debug("Attempting to delete user with id: {}", userId);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> {
-                    log.warn("Delete failed: User with ID {} not found", userId);
-                    return new IllegalArgumentException("User not found");
-                });
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
 
         userRepository.delete(user);
         log.info("User with id: {} successfully deleted", userId);
