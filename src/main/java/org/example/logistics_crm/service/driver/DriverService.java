@@ -1,6 +1,7 @@
 package org.example.logistics_crm.service.driver;
 
 import org.example.logistics_crm.dto.driver.request.CreateDriverRequestDTO;
+import org.example.logistics_crm.dto.driver.request.DriverSearchRequestDTO;
 import org.example.logistics_crm.dto.driver.response.DriverDetailsResponseDTO;
 import org.example.logistics_crm.dto.driver.response.DriverListResponseDTO;
 import org.springframework.data.domain.Page;
