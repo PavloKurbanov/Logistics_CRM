@@ -1,17 +1,14 @@
 package org.example.logistics_crm.dto.truck.response;
 
 import org.example.logistics_crm.entity.truck.TruckStatus;
+import org.example.logistics_crm.service.truck.TruckService;
 
-import java.time.LocalDateTime;
-
-public record TruckDetailsResponseDTO(
+public record TruckListResponseDTO(
         Long id,
         String brand,
         String model,
         String licenseNumber,
         Double capacity,
-        TruckStatus truckStatus,
-        LocalDateTime createDate,
-        LocalDateTime updateDate
+        TruckStatus truckStatus
 ) {
 }
