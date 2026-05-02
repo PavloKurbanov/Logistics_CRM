@@ -1,6 +1,7 @@
 package org.example.logistics_crm.service.user.impl;
 
-import jakarta.transaction.Transactional;
+
+import lombok.extern.slf4j.Slf4j;
 import org.example.logistics_crm.dto.user.request.CreateUserRequestDTO;
 import org.example.logistics_crm.dto.user.request.UserSearchRequestDTO;
 import org.example.logistics_crm.dto.user.response.UserDetailsResponseDTO;
@@ -14,7 +15,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -34,11 +37,16 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Create user request must not be null");
         }
 
+        log.info("Attempting to create new user with email: {}, phoneNumber: {}"
+                , createUserRequestDTO.email(), createUserRequestDTO.phoneNumber());
+
         if (userRepository.existsByEmail(createUserRequestDTO.email())) {
+            log.warn("Failed to create new user. Email {} already exists", createUserRequestDTO.email());
             throw new IllegalArgumentException("Email already exists");
         }
 
         if (userRepository.existsByPhoneNumber(createUserRequestDTO.phoneNumber())) {
+            log.warn("Failed to create new user. Phone {} number already exists", createUserRequestDTO.phoneNumber());
             throw new IllegalArgumentException("Phone number already exists");
         }
 
@@ -52,6 +60,8 @@ public class UserServiceImpl implements UserService {
                 encodedPassword)
         );
 
+        log.info("User with email: {}, phoneNumber: {} successfully created with id: {}"
+                , createUserRequestDTO.email(), createUserRequestDTO.phoneNumber(), user.getId());
         return mapToDetails(user);
     }
 
@@ -65,15 +75,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDetailsResponseDTO findById(Long userId) {
+        if (userId == null || userId <= 0) {
+            throw new IllegalArgumentException("User id cannot be null or less than 0");
+        }
+
+        log.debug("Fetching user with id: {}", userId);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> {
+                    log.warn("User with id: {} not found", userId);
+                    return new IllegalArgumentException("User not found");
+                });
 
         return mapToDetails(user);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<UserListResponseDTO> searchUser(UserSearchRequestDTO requestDTO, Pageable pageable) {
         if (requestDTO == null) {
             throw new IllegalArgumentException("User search request must not be null");
@@ -83,17 +103,20 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Pageable must not be null. Please provide pagination parameters.");
         }
 
+        log.debug("Searching for users with criteria: {}", requestDTO);
         Page<User> all = userRepository.findAll(UserSpecification.search(requestDTO), pageable);
-        return mapToList(all);
+        return pageToList(all);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<UserListResponseDTO> findAll(Pageable pageable) {
         if (pageable == null) {
             throw new IllegalArgumentException("Pageable must not be null. Please provide pagination parameters.");
         }
 
-        return mapToList(userRepository.findAll(pageable));
+        log.debug("Fetching all users, page request: {}", pageable);
+        return pageToList(userRepository.findAll(pageable));
     }
 
     @Override
@@ -103,23 +126,31 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("User id must be greater than 0");
         }
 
+        log.info("Attempting to delete user with id: {}", userId);
+
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> {
+                    log.warn("Delete failed: User with ID {} not found", userId);
+                    return new IllegalArgumentException("User not found");
+                });
 
         userRepository.delete(user);
+        log.info("User with id: {} successfully deleted", userId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User getUserEntityById(Long userId) {
         if (userId == null || userId <= 0) {
             throw new IllegalArgumentException("User id must be greater than 0");
         }
 
         return userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean existsByEmail(String email, Long userId) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("Email can't be null");
@@ -131,6 +162,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean existsByPhoneNumber(String phoneNumber, Long userId) {
         return userRepository.existsByPhoneNumberAndIdNot(phoneNumber, userId);
     }
@@ -148,7 +180,7 @@ public class UserServiceImpl implements UserService {
         );
     }
 
-    private Page<UserListResponseDTO> mapToList(Page<User> users) {
+    private Page<UserListResponseDTO> pageToList(Page<User> users) {
         return users
                 .map(user -> new UserListResponseDTO(
                         user.getId(),

@@ -39,7 +39,7 @@ public class TruckController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public TruckDetailsResponseDTO getTruckById(
-            @PathVariable Long id) {
+            @PathVariable("id") Long id) {
         return truckService.findById(id);
     }
 
@@ -53,7 +53,7 @@ public class TruckController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTruckById(
-            @PathVariable Long id) {
+            @PathVariable("id") Long id) {
         truckService.deleteTruck(id);
     }
 }

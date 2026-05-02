@@ -1,6 +1,7 @@
 package org.example.logistics_crm.service.order.impl;
 
-import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.example.logistics_crm.dto.order.request.CreateOrderRequestDTO;
 import org.example.logistics_crm.dto.order.request.OrderSearchRequestDTO;
 import org.example.logistics_crm.dto.order.response.OrderDetailsResponseDTO;
@@ -23,6 +24,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
@@ -42,6 +44,9 @@ public class OrderServiceImpl implements OrderService {
         if (request == null) {
             throw new IllegalArgumentException("Order request can't be null");
         }
+
+        log.debug("Attempting to create new order from client with id: {} to client with id: {}",
+                request.senderClientId(), request.receiverClientId());
 
         Client senderClient = clientService.getClientEntityById(request.senderClientId());
 
@@ -65,6 +70,9 @@ public class OrderServiceImpl implements OrderService {
         order.setTrackingCode(generateTrackingCode());
 
         Order savedOrder = orderRepository.save(order);
+        log.info("Order with id: {} successfully created from client with id: {} to client with id: {}",
+                savedOrder.getId(), request.senderClientId(), request.receiverClientId());
+
         return mapToDetailsResponseDTO(savedOrder);
     }
 
@@ -83,28 +91,44 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalArgumentException("Order id must be greater than 0");
         }
 
+        log.debug("Fetching order with id: {} for deletion", orderId);
+
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Order not found with id: " + orderId));
+
+        if (order.getOrderStatus() != OrderStatus.CANCELLED && order.getOrderStatus() != OrderStatus.CREATED) {
+            throw new IllegalArgumentException("Order status must be CREATED or CANCELLED");
+        }
 
         orderRepository.delete(order);
+        log.info("Order with id: {} successfully deleted", orderId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OrderDetailsResponseDTO getOrderById(Long id) {
         if (id == null || id <= 0L) {
             throw new IllegalArgumentException("Order id must be greater than 0");
         }
+
+        log.debug("Fetching order with id: {} for getting order", id);
+
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+                .orElseThrow(() -> {
+                    log.warn("Failed to find order. Order with id {} does not exist", id);
+                    return new IllegalArgumentException("Order not found with id: " + id);
+                });
 
         return mapToDetailsResponseDTO(order);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<OrderListResponseDTO> getAllOrders(Pageable pageable) {
         if (pageable == null) {
             throw new IllegalArgumentException("Pageable must not be null. Please provide pagination parameters.");
         }
+        log.debug("Fetching all orders for page: {}", pageable);
         return mapToPageResponseDTO(orderRepository.findAll(pageable));
     }
 
@@ -117,9 +141,13 @@ public class OrderServiceImpl implements OrderService {
         if (orderStatus == null) {
             throw new IllegalArgumentException("Order status can't be null");
         }
+        log.debug("Attempting to update order status for order with id: {} to status: {}", orderId, orderStatus);
 
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+                .orElseThrow(() -> {
+                    log.warn("Failed to find order with id: {}", orderId);
+                    return new IllegalArgumentException("Order not found with id: " + orderId);
+                });
 
         if (order.getOrderStatus() == orderStatus) {
             throw new IllegalStateException(
@@ -130,11 +158,12 @@ public class OrderServiceImpl implements OrderService {
         orderStatusValidators.getOrDefault(orderStatus, orderStatusValidators.get(OrderStatus.UNSUPPORTED)).validate(order);
 
         order.setOrderStatus(orderStatus);
-        Order updateOrder = orderRepository.save(order);
-        return mapToDetailsResponseDTO(updateOrder);
+        log.info("Order with ID: {} successfully updated to status: {}", orderId, orderStatus);
+        return mapToDetailsResponseDTO(order);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<OrderListResponseDTO> searchOrders(OrderSearchRequestDTO request, Pageable pageable) {
         if (request == null) {
             throw new IllegalArgumentException("Search request can't be null");
@@ -144,9 +173,8 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalArgumentException("Pageable must not be null. Please provide pagination parameters.");
         }
 
-        Page<Order> all = orderRepository.findAll(OrderSpecification.search(request), pageable);
-
-        return mapToPageResponseDTO(all);
+        log.debug("Searching for orders with criteria: {}", request);
+        return mapToPageResponseDTO(orderRepository.findAll(OrderSpecification.search(request), pageable));
     }
 
     private Page<OrderListResponseDTO> mapToPageResponseDTO(Page<Order> orders) {

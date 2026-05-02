@@ -34,7 +34,7 @@ public class ClientController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ClientDetailsResponseDTO findById(
-            @PathVariable Long id) {
+            @PathVariable("id") Long id) {
         return clientService.findById(id);
     }
 
@@ -47,7 +47,7 @@ public class ClientController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(
-            @PathVariable Long id) {
+            @PathVariable("id") Long id) {
         clientService.deleteClient(id);
     }
 
@@ -61,21 +61,21 @@ public class ClientController {
     @PutMapping("/{id}/password")
     @ResponseStatus(HttpStatus.OK)
     public ClientDetailsResponseDTO changePassword(
-            @PathVariable Long id, @Valid @RequestBody ChangeClientPasswordRequestDTO request) {
+            @PathVariable("id") Long id, @Valid @RequestBody ChangeClientPasswordRequestDTO request) {
         return accountClientService.changePassword(id, request);
     }
 
     @PutMapping("/{id}/phoneNumber")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ClientDetailsResponseDTO changePhoneNumber(
-            @PathVariable Long id, @Valid @RequestBody ChangeClientPhoneNumberDTO request) {
+            @PathVariable("id") Long id, @Valid @RequestBody ChangeClientPhoneNumberDTO request) {
         return accountClientService.changePhoneNumber(id, request);
     }
 
     @PutMapping("/{id}/email")
     @ResponseStatus(HttpStatus.OK)
     public ClientDetailsResponseDTO changeEmail(
-            @PathVariable Long id, @Valid @RequestBody ChangeClientEmailRequestDTO request) {
+            @PathVariable("id") Long id, @Valid @RequestBody ChangeClientEmailRequestDTO request) {
         return accountClientService.changeEmail(id, request);
     }
 }

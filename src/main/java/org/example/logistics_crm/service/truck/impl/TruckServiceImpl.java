@@ -1,6 +1,7 @@
 package org.example.logistics_crm.service.truck.impl;
 
-import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.example.logistics_crm.dto.truck.request.CreateTruckRequestDTO;
 import org.example.logistics_crm.dto.truck.request.SearchTruckRequestDTO;
 import org.example.logistics_crm.dto.truck.response.TruckDetailsResponseDTO;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class TruckServiceImpl implements TruckService {
 
@@ -28,7 +30,14 @@ public class TruckServiceImpl implements TruckService {
     @Override
     @Transactional
     public TruckDetailsResponseDTO createTruck(CreateTruckRequestDTO request) {
+        if (request == null) {
+            throw new IllegalArgumentException("Create truck request must not be null");
+        }
+
+        log.info("Attempting to create new truck with license number: {}", request.licenseNumber());
+
         if (existsByLicenseNumber(request.licenseNumber())) {
+            log.warn("Failed to create new truck. Truck with license number {} already exists", request.licenseNumber());
             throw new IllegalArgumentException("Truck with license number " + request.licenseNumber() + " already exists");
         }
 
@@ -39,33 +48,50 @@ public class TruckServiceImpl implements TruckService {
                 request.capacity()
         ));
 
+        log.info("Truck with id: {} and license number: {} successfully created", truck.getId(), truck.getLicenseNumber());
         return pageToDetails(truck);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public TruckDetailsResponseDTO findById(Long id) {
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("Truck id must be greater than 0");
+        }
+
+        log.debug("Fetching truck with id: {}", id);
+
         Truck truck = truckRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Truck with id " + id + " does not exist"));
+                .orElseThrow(() -> {
+                    log.warn("Failed to find truck. Truck with id {} does not exist", id);
+                    return new IllegalArgumentException("Truck with id " + id + " does not exist");
+                });
+
         return pageToDetails(truck);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<TruckListResponseDTO> findAll(Pageable pageable) {
         if (pageable == null) {
             throw new IllegalArgumentException("Pageable must not be null. Please provide pagination parameters.");
         }
+        log.debug("Fetching all trucks in page: {}", pageable);
         return pageToList(truckRepository.findAll(pageable));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<TruckListResponseDTO> searchTruck(SearchTruckRequestDTO requestDTO, Pageable pageable) {
         if (requestDTO == null) {
             throw new IllegalArgumentException("Truck search request can't be null");
         }
 
-        if(pageable == null) {
+        if (pageable == null) {
             throw new IllegalArgumentException("Pageable must not be null. Please provide pagination parameters.");
         }
+
+        log.debug("Searching for trucks with criteria: {}", requestDTO);
         return pageToList(truckRepository.findAll(TruckSpecification.search(requestDTO), pageable));
     }
 
@@ -75,16 +101,24 @@ public class TruckServiceImpl implements TruckService {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("Truck id must be greater than 0");
         }
+
+        log.debug("Attempting to delete truck with id: {}", id);
+
         Truck truck = truckRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Truck with id " + id + " does not exist"));
+                .orElseThrow(() -> {
+                    log.warn("Failed to delete truck. Truck with id {} does not exist", id);
+                    return new IllegalArgumentException("Truck with id " + id + " does not exist");
+                });
 
         if (truck.getTruckStatus() != TruckStatus.AVAILABLE) {
             throw new IllegalStateException("Truck with id " + id + " cannot be deleted because it is not available");
         }
         truckRepository.delete(truck);
+        log.info("Truck with id: {} successfully deleted", id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean existsByLicenseNumber(String licenseNumber) {
         if (licenseNumber == null) {
             throw new IllegalArgumentException("License number must not be null");
