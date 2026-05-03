@@ -147,7 +147,7 @@ public class OrderServiceImpl implements OrderService {
 
         if (order.getOrderStatus() == orderStatus) {
             throw new IllegalStateException(
-                    "Order already has this status"
+                    "Order with ID: " + orderId + " already has this status " + orderStatus
             );
         }
 

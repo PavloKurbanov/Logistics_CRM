@@ -5,5 +5,6 @@ public enum DriverStatus {
     ON_DELIVERY,
     ON_VACATION,
     SICK_LEAVE,
-    INACTIVE
+    INACTIVE,
+    UNSUPPORTED
 }

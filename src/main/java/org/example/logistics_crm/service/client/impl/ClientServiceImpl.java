@@ -32,7 +32,7 @@ public class ClientServiceImpl implements ClientService {
     @Transactional
     public ClientDetailsResponseDTO createClient(CreateClientRequestDTO createClientRequestDTO) {
         if (createClientRequestDTO == null) {
-            throw new IllegalArgumentException("Client can't be null");
+            throw new IllegalArgumentException("Client request can't be null");
         }
 
         log.debug("Attempting to create new client with email: {}, phoneNumber: {}"
@@ -73,10 +73,10 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @Transactional(readOnly = true)
     public ClientDetailsResponseDTO findById(Long clientId) {
+        log.debug("Fetching client with id: {}", clientId);
         if (clientId == null || clientId <= 0) {
             throw new IllegalArgumentException("Client id must be greater than 0");
         }
-        log.debug("Fetching client with id: {}", clientId);
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new IllegalArgumentException("Client with ID: " + clientId + " not found"));
 

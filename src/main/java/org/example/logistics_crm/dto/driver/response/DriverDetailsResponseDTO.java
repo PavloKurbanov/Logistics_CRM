@@ -2,7 +2,7 @@ package org.example.logistics_crm.dto.driver.response;
 
 import org.example.logistics_crm.entity.driver.DriverStatus;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record DriverDetailsResponseDTO(
         Long id,
@@ -11,7 +11,7 @@ public record DriverDetailsResponseDTO(
         String licenseNumber,
         String phoneNumber,
         DriverStatus driverStatus,
-        LocalDate createdDate,
-        LocalDate updatedDate
+        LocalDateTime createdDate,
+        LocalDateTime updatedDate
 ) {
 }
