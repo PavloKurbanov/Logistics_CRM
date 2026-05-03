@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import org.example.logistics_crm.entity.driver.Driver;
 import org.example.logistics_crm.entity.order.Order;
 import org.example.logistics_crm.entity.truck.Truck;
-import org.example.logistics_crm.entity.truck.Truck_;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
