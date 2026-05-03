@@ -2,6 +2,7 @@ package org.example.logistics_crm.specification;
 
 import org.example.logistics_crm.dto.truck.request.SearchTruckRequestDTO;
 import org.example.logistics_crm.entity.truck.Truck;
+import org.example.logistics_crm.entity.truck.Truck_;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public final class TruckSpecification {
             if (request.model() != null && !request.model().isBlank()) {
                 predicates.add(
                         cb.like(
-                                cb.lower(root.get("model")),
+                                cb.lower(root.get(Truck_.model)),
                                 request.model().toLowerCase() + "%"
                         )
                 );
@@ -29,7 +30,7 @@ public final class TruckSpecification {
             if (request.brand() != null && !request.brand().isBlank()) {
                 predicates.add(
                         cb.like(
-                                cb.lower(root.get("brand")),
+                                cb.lower(root.get(Truck_.brand)),
                                 request.brand().toLowerCase() + "%"
                         )
                 );
@@ -38,7 +39,7 @@ public final class TruckSpecification {
             if (request.licenseNumber() != null && !request.licenseNumber().isBlank()) {
                 predicates.add(
                         cb.like(
-                                cb.lower(root.get("licenseNumber")),
+                                cb.lower(root.get(Truck_.licenseNumber)),
                                 request.licenseNumber().toLowerCase() + "%"
                         )
                 );
@@ -46,25 +47,25 @@ public final class TruckSpecification {
 
             if (request.capacityFrom() != null) {
                 predicates.add(
-                        cb.greaterThanOrEqualTo(root.get("capacity"), request.capacityFrom())
+                        cb.greaterThanOrEqualTo(root.get(Truck_.capacity), request.capacityFrom())
                 );
             }
 
             if (request.capacityTo() != null) {
                 predicates.add(
-                        cb.lessThanOrEqualTo(root.get("capacity"), request.capacityTo())
+                        cb.lessThanOrEqualTo(root.get(Truck_.capacity), request.capacityTo())
                 );
             }
 
             if (request.createdFrom() != null) {
                 predicates.add(
-                        cb.greaterThanOrEqualTo(root.get("createdDate"), request.createdFrom())
+                        cb.greaterThanOrEqualTo(root.get(Truck_.createdDate), request.createdFrom())
                 );
             }
 
             if (request.createdTo() != null) {
                 predicates.add(
-                        cb.lessThanOrEqualTo(root.get("createdDate"), request.createdTo())
+                        cb.lessThanOrEqualTo(root.get(Truck_.createdDate), request.createdTo())
                 );
             }
 

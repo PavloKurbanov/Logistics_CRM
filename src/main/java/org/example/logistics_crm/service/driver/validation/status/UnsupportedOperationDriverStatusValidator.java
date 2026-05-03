@@ -1,4 +1,4 @@
-package org.example.logistics_crm.specification;
+package org.example.logistics_crm.service.driver.validation.status;
 
 import org.example.logistics_crm.entity.driver.Driver;
 import org.example.logistics_crm.entity.driver.DriverStatus;

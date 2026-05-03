@@ -3,6 +3,7 @@ package org.example.logistics_crm.specification;
 import jakarta.persistence.criteria.Predicate;
 import org.example.logistics_crm.dto.driver.request.DriverSearchRequestDTO;
 import org.example.logistics_crm.entity.driver.Driver;
+import org.example.logistics_crm.entity.driver.Driver_;
 import org.springframework.data.jpa.domain.Specification;
 
 
@@ -21,7 +22,7 @@ public final class DriverSpecification {
 
             if (request.firstName() != null && !request.firstName().isBlank()) {
                 predicates.add(
-                        cb.like(cb.lower(root.get("firstName")),
+                        cb.like(cb.lower(root.get(Driver_.firstName)),
                                 request.firstName().toLowerCase() + "%"
                         )
                 );
@@ -29,7 +30,7 @@ public final class DriverSpecification {
 
             if (request.lastName() != null && !request.lastName().isBlank()) {
                 predicates.add(
-                        cb.like(cb.lower(root.get("lastName")),
+                        cb.like(cb.lower(root.get(Driver_.lastName)),
                                 request.lastName().toLowerCase() + "%"
                         )
                 );
@@ -37,31 +38,31 @@ public final class DriverSpecification {
 
             if (request.licenseNumber() != null && !request.licenseNumber().isBlank()) {
                 predicates.add(
-                        cb.like(cb.lower(root.get("licenseNumber")),
+                        cb.like(cb.lower(root.get(Driver_.licenseNumber)),
                                 request.licenseNumber().toLowerCase() + "%"
                         )
                 );
             }
 
             if(request.status() != null) {
-                predicates.add(cb.equal(root.get("driverStatus"), request.status()));
+                predicates.add(cb.equal(root.get(Driver_.driverStatus), request.status()));
             }
 
-            if(request.phoneNumber() != null || !request.phoneNumber().isBlank()) {
+            if(request.phoneNumber() != null && !request.phoneNumber().isBlank()) {
                 predicates.add(
-                        cb.equal(root.get("phoneNumber"), request.phoneNumber())
+                        cb.equal(root.get(Driver_.PHONE_NUMBER), request.phoneNumber())
                 );
             }
 
             if(request.createdFrom() != null) {
                 predicates.add(
-                        cb.greaterThanOrEqualTo(root.get("createdDate"), request.createdFrom())
+                        cb.greaterThanOrEqualTo(root.get(Driver_.createdDate), request.createdFrom())
                 );
             }
 
             if(request.createdTo() != null) {
                 predicates.add(
-                        cb.lessThanOrEqualTo(root.get("createdDate"), request.createdTo()));
+                        cb.lessThanOrEqualTo(root.get(Driver_.createdDate), request.createdTo()));
             }
 
             if(predicates.isEmpty()) {

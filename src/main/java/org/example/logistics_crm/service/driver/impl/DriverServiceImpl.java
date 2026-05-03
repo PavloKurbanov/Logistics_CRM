@@ -41,11 +41,11 @@ public class DriverServiceImpl implements DriverService {
             throw new IllegalArgumentException("Request to create a driver cannot be null.");
         }
 
-        if (driverRepository.existByLicenseNumber(createDriverRequestDTO.licenseNumber())) {
+        if (driverRepository.existsByLicenseNumber(createDriverRequestDTO.licenseNumber())) {
             throw new IllegalArgumentException("Driver with license number " + createDriverRequestDTO.licenseNumber() + " already exists.");
         }
 
-        if (driverRepository.existByPhoneNumber(createDriverRequestDTO.phoneNumber())) {
+        if (driverRepository.existsByPhoneNumber(createDriverRequestDTO.phoneNumber())) {
             throw new IllegalArgumentException("Driver with phone number " + createDriverRequestDTO.phoneNumber() + " already exists.");
         }
 

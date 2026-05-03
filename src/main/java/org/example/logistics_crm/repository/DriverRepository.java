@@ -7,7 +7,7 @@ import org.example.logistics_crm.entity.driver.Driver;
 
 @Repository
 public interface DriverRepository extends JpaRepository<Driver, Long>, JpaSpecificationExecutor<Driver> {
-    boolean existByLicenseNumber(String licenseNumber);
+    boolean existsByLicenseNumber(String licenseNumber);
 
-    boolean existByPhoneNumber(String number);
+    boolean existsByPhoneNumber(String number);
 }
