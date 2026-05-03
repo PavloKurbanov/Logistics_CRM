@@ -102,9 +102,7 @@ public class TruckServiceImpl implements TruckService {
         log.debug("Attempting to delete truck with id: {}", id);
 
         Truck truck = truckRepository.findById(id)
-                .orElseThrow(() ->
-
-                        new IllegalArgumentException("Truck with id " + id + " does not exist"));
+                .orElseThrow(() -> new IllegalArgumentException("Truck with id " + id + " does not exist"));
 
         if (truck.getTruckStatus() != TruckStatus.AVAILABLE) {
             throw new IllegalStateException("Truck with id " + id + " cannot be deleted because it is not available");

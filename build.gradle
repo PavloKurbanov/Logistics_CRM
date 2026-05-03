@@ -24,6 +24,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    // JPA Static Metamodel
+    annotationProcessor 'org.hibernate.orm:hibernate-jpamodelgen:6.6.0.Final'
+    // Тобі також знадобиться сама бібліотека jakarta.persistence для цих класів
+    implementation 'jakarta.persistence:jakarta.persistence-api'
     // Logging Dependencies
     implementation 'org.slf4j:slf4j-api'
     implementation 'ch.qos.logback:logback-classic'
