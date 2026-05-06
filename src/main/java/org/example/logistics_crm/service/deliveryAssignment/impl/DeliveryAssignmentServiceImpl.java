@@ -61,7 +61,6 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
     }
 
 
-
     @Override
     public DeliveryAssignmentDetailsResponseDTO findDeliveryAssignmentById(Long deliveryAssignmentId) {
         return null;
@@ -93,12 +92,14 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
             throw new IllegalArgumentException("Order with id: " + requestDTO.orderId() + " already has an active delivery assignment");
         }
 
-        if(deliveryAssignmentRepository.existsByDriverIdAndDeliveryStatus(requestDTO.driverId(), DeliveryStatus.IN_PROGRESS)){
-            throw new IllegalArgumentException("Driver with id: " + requestDTO.driverId() + " is currently on delivery and cannot be assigned to another delivery");
+        if (deliveryAssignmentRepository.existsByDriverIdAndDeliveryStatus(requestDTO.driverId(), DeliveryStatus.IN_PROGRESS)) {
+            throw new IllegalArgumentException("Driver with id: " + requestDTO.driverId()
+                    + " is currently on delivery and cannot be assigned to another delivery");
         }
 
-        if(deliveryAssignmentRepository.existsByTruckIdAndDeliveryStatus(requestDTO.truckId(), DeliveryStatus.IN_PROGRESS)){
-            throw new IllegalArgumentException("Truck with id: " + requestDTO.truckId() + " is currently on delivery and cannot be assigned to another delivery");
+        if (deliveryAssignmentRepository.existsByTruckIdAndDeliveryStatus(requestDTO.truckId(), DeliveryStatus.IN_PROGRESS)) {
+            throw new IllegalArgumentException("Truck with id: " + requestDTO.truckId()
+                    + " is currently on delivery and cannot be assigned to another delivery");
         }
     }
 
