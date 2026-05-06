@@ -120,6 +120,12 @@ public class TruckServiceImpl implements TruckService {
         return truckRepository.existsByLicenseNumber(licenseNumber);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Truck findTruckEntityById(Long id) {
+        return truckRepository.getReferenceById(id);
+    }
+
     private TruckDetailsResponseDTO pageToDetails(Truck truck) {
         return new TruckDetailsResponseDTO(
                 truck.getId(),

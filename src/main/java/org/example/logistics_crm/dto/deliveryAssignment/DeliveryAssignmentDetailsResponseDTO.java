@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public record DeliveryAssignmentDetailsResponseDTO(
         Long id,
         Long orderId,
-        String orderNumber,
+        String orderCode,
         Long driverId,
         String driverFullName,
         Long truckId,

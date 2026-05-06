@@ -4,6 +4,7 @@ import org.example.logistics_crm.dto.driver.request.CreateDriverRequestDTO;
 import org.example.logistics_crm.dto.driver.request.DriverSearchRequestDTO;
 import org.example.logistics_crm.dto.driver.response.DriverDetailsResponseDTO;
 import org.example.logistics_crm.dto.driver.response.DriverListResponseDTO;
+import org.example.logistics_crm.entity.driver.Driver;
 import org.example.logistics_crm.entity.driver.DriverStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,5 +22,7 @@ public interface DriverService {
     Page<DriverListResponseDTO> search(DriverSearchRequestDTO request, Pageable pageable);
 
     void deleteDriver(Long id);
+
+    Driver findDriverEntityById(Long id);
 
 }

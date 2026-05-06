@@ -125,6 +125,12 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Driver findDriverEntityById(Long id) {
+        return driverRepository.getReferenceById(id);
+    }
+
+    @Override
     @Transactional
     public void deleteDriver(Long id) {
         log.debug("Attempt to delete driver with id: {}", id);

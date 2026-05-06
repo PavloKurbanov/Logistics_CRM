@@ -23,4 +23,6 @@ public interface OrderService {
     Page<OrderListResponseDTO> searchOrders(OrderSearchRequestDTO request, Pageable pageable);
 
     OrderDetailsResponseDTO updateOrderStatus(Long orderId, OrderStatus orderStatus);
+
+    Order findOrderEntityById(Long orderId);
 }

@@ -4,6 +4,7 @@ import org.example.logistics_crm.dto.truck.request.CreateTruckRequestDTO;
 import org.example.logistics_crm.dto.truck.request.SearchTruckRequestDTO;
 import org.example.logistics_crm.dto.truck.response.TruckDetailsResponseDTO;
 import org.example.logistics_crm.dto.truck.response.TruckListResponseDTO;
+import org.example.logistics_crm.entity.truck.Truck;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,4 +20,6 @@ public interface TruckService {
     void deleteTruck(Long id);
 
     boolean existsByLicenseNumber(String licenseNumber);
+
+    Truck findTruckEntityById(Long id);
 }

@@ -173,6 +173,12 @@ public class OrderServiceImpl implements OrderService {
         return mapToPageResponseDTO(orderRepository.findAll(OrderSpecification.search(request), pageable));
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Order findOrderEntityById(Long orderId) {
+        return orderRepository.getReferenceById(orderId);
+    }
+
     private Page<OrderListResponseDTO> mapToPageResponseDTO(Page<Order> orders) {
         return orders
                 .map(order -> new OrderListResponseDTO(

@@ -1,8 +1,12 @@
 package org.example.logistics_crm.service.deliveryAssignment.impl;
 
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.example.logistics_crm.dto.deliveryAssignment.CreateDeliveryAssignmentRequestDTO;
 import org.example.logistics_crm.dto.deliveryAssignment.DeliveryAssignmentDetailsResponseDTO;
 import org.example.logistics_crm.dto.deliveryAssignment.DeliveryAssignmentSearchRequestDTO;
+import org.example.logistics_crm.entity.deliveryAssignment.DeliveryAssignment;
+import org.example.logistics_crm.entity.deliveryAssignment.DeliveryStatus;
 import org.example.logistics_crm.repository.DeliveryAssignmentRepository;
 import org.example.logistics_crm.service.deliveryAssignment.DeliveryAssignmentService;
 import org.example.logistics_crm.service.driver.DriverService;
@@ -13,6 +17,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+@Slf4j
 @Service
 public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService {
     private final DriverService driverService;
@@ -31,10 +38,29 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
 
 
     @Override
+    @Transactional
     public DeliveryAssignmentDetailsResponseDTO createDeliveryAssignment(CreateDeliveryAssignmentRequestDTO requestDTO) {
+        validateAssignmentPossibility(requestDTO);
 
-        return null;
+        log.debug("Attempting to create delivery assignment with Order_ID: {}, Driver_ID: {}, Truck_ID: {} ",
+                requestDTO.orderId(), requestDTO.driverId(), requestDTO.truckId());
+
+        DeliveryAssignment deliveryAssignment = new DeliveryAssignment();
+
+        deliveryAssignment.setDriver(driverService.findDriverEntityById(requestDTO.driverId()));
+        deliveryAssignment.setOrder(orderService.findOrderEntityById(requestDTO.orderId()));
+        deliveryAssignment.setTruck(truckService.findTruckEntityById(requestDTO.truckId()));
+
+        deliveryAssignment.setDeliveryStatus(DeliveryStatus.PLANNED);
+
+        DeliveryAssignment savedAssignment = deliveryAssignmentRepository.save(deliveryAssignment);
+
+        log.info("Delivery assignment created with ID: {}", savedAssignment.getId());
+
+        return mapToDetails(savedAssignment);
     }
+
+
 
     @Override
     public DeliveryAssignmentDetailsResponseDTO findDeliveryAssignmentById(Long deliveryAssignmentId) {
@@ -54,5 +80,41 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
     @Override
     public Page<DeliveryAssignmentDetailsResponseDTO> search(DeliveryAssignmentSearchRequestDTO requestDTO, Pageable pageable) {
         return null;
+    }
+
+    private void validateAssignmentPossibility(CreateDeliveryAssignmentRequestDTO requestDTO) {
+        if (requestDTO == null) {
+            throw new IllegalArgumentException("Request Delivery Assignment cannot be null");
+        }
+
+        List<DeliveryStatus> deliveryStatuses = List.of(DeliveryStatus.PLANNED, DeliveryStatus.IN_PROGRESS);
+
+        if (deliveryAssignmentRepository.existsByOrderIdAndDeliveryStatusIn(requestDTO.orderId(), deliveryStatuses)) {
+            throw new IllegalArgumentException("Order with id: " + requestDTO.orderId() + " already has an active delivery assignment");
+        }
+
+        if(deliveryAssignmentRepository.existsByDriverIdAndDeliveryStatus(requestDTO.driverId(), DeliveryStatus.IN_PROGRESS)){
+            throw new IllegalArgumentException("Driver with id: " + requestDTO.driverId() + " is currently on delivery and cannot be assigned to another delivery");
+        }
+
+        if(deliveryAssignmentRepository.existsByTruckIdAndDeliveryStatus(requestDTO.truckId(), DeliveryStatus.IN_PROGRESS)){
+            throw new IllegalArgumentException("Truck with id: " + requestDTO.truckId() + " is currently on delivery and cannot be assigned to another delivery");
+        }
+    }
+
+
+    private DeliveryAssignmentDetailsResponseDTO mapToDetails(DeliveryAssignment deliveryAssignment) {
+        return new DeliveryAssignmentDetailsResponseDTO(
+                deliveryAssignment.getId(),
+                deliveryAssignment.getOrder().getId(),
+                deliveryAssignment.getOrder().getOrderCode(),
+                deliveryAssignment.getDriver().getId(),
+                deliveryAssignment.getDriver().getFirstName() + " " + deliveryAssignment.getDriver().getLastName(),
+                deliveryAssignment.getTruck().getId(),
+                deliveryAssignment.getTruck().getLicenseNumber(),
+                deliveryAssignment.getDeliveryStatus().name(),
+                deliveryAssignment.getCreatedDate(),
+                deliveryAssignment.getUpdatedDate()
+        );
     }
 }
