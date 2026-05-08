@@ -60,11 +60,11 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
         return mapToDetails(savedAssignment);
     }
 
-
-
     @Override
     public DeliveryAssignmentDetailsResponseDTO findDeliveryAssignmentById(Long deliveryAssignmentId) {
-        return null;
+        return deliveryAssignmentRepository.findById(deliveryAssignmentId)
+                .map(this::mapToDetails).orElseThrow(() ->
+                        new IllegalArgumentException("Delivery assignment with id: " + deliveryAssignmentId + " not found"));
     }
 
     @Override
@@ -80,6 +80,21 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
     @Override
     public Page<DeliveryAssignmentDetailsResponseDTO> search(DeliveryAssignmentSearchRequestDTO requestDTO, Pageable pageable) {
         return null;
+    }
+
+    private DeliveryAssignmentDetailsResponseDTO mapToDetails(DeliveryAssignment deliveryAssignment) {
+        return new DeliveryAssignmentDetailsResponseDTO(
+                deliveryAssignment.getId(),
+                deliveryAssignment.getOrder().getId(),
+                deliveryAssignment.getOrder().getOrderCode(),
+                deliveryAssignment.getDriver().getId(),
+                deliveryAssignment.getDriver().getFirstName() + " " + deliveryAssignment.getDriver().getLastName(),
+                deliveryAssignment.getTruck().getId(),
+                deliveryAssignment.getTruck().getLicenseNumber(),
+                deliveryAssignment.getDeliveryStatus().name(),
+                deliveryAssignment.getCreatedDate(),
+                deliveryAssignment.getUpdatedDate()
+        );
     }
 
     private void validateAssignmentPossibility(CreateDeliveryAssignmentRequestDTO requestDTO) {
@@ -100,21 +115,5 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
         if(deliveryAssignmentRepository.existsByTruckIdAndDeliveryStatus(requestDTO.truckId(), DeliveryStatus.IN_PROGRESS)){
             throw new IllegalArgumentException("Truck with id: " + requestDTO.truckId() + " is currently on delivery and cannot be assigned to another delivery");
         }
-    }
-
-
-    private DeliveryAssignmentDetailsResponseDTO mapToDetails(DeliveryAssignment deliveryAssignment) {
-        return new DeliveryAssignmentDetailsResponseDTO(
-                deliveryAssignment.getId(),
-                deliveryAssignment.getOrder().getId(),
-                deliveryAssignment.getOrder().getOrderCode(),
-                deliveryAssignment.getDriver().getId(),
-                deliveryAssignment.getDriver().getFirstName() + " " + deliveryAssignment.getDriver().getLastName(),
-                deliveryAssignment.getTruck().getId(),
-                deliveryAssignment.getTruck().getLicenseNumber(),
-                deliveryAssignment.getDeliveryStatus().name(),
-                deliveryAssignment.getCreatedDate(),
-                deliveryAssignment.getUpdatedDate()
-        );
     }
 }

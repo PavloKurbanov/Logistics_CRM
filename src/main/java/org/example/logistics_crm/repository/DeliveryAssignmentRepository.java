@@ -5,12 +5,14 @@ import org.example.logistics_crm.entity.deliveryAssignment.DeliveryStatus;
 import org.example.logistics_crm.entity.driver.DriverStatus;
 import org.example.logistics_crm.entity.truck.TruckStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface DeliveryAssignmentRepository extends JpaRepository<DeliveryAssignment, Long> {
+public interface DeliveryAssignmentRepository extends JpaRepository<DeliveryAssignment, Long>
+        , JpaSpecificationExecutor<DeliveryAssignment> {
     List<DeliveryAssignment> findAllByDriverIdAndDeliveryStatus(Long driverId, DeliveryStatus deliveryStatus);
 
     boolean existsByDriverIdAndDeliveryStatus(Long driverId, DeliveryStatus deliveryStatus);
