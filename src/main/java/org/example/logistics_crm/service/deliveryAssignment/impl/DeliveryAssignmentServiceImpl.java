@@ -7,6 +7,12 @@ import org.example.logistics_crm.dto.deliveryAssignment.DeliveryAssignmentDetail
 import org.example.logistics_crm.dto.deliveryAssignment.DeliveryAssignmentSearchRequestDTO;
 import org.example.logistics_crm.entity.deliveryAssignment.DeliveryAssignment;
 import org.example.logistics_crm.entity.deliveryAssignment.DeliveryStatus;
+import org.example.logistics_crm.entity.driver.Driver;
+import org.example.logistics_crm.entity.driver.DriverStatus;
+import org.example.logistics_crm.entity.order.Order;
+import org.example.logistics_crm.entity.order.OrderStatus;
+import org.example.logistics_crm.entity.truck.Truck;
+import org.example.logistics_crm.entity.truck.TruckStatus;
 import org.example.logistics_crm.repository.DeliveryAssignmentRepository;
 import org.example.logistics_crm.service.deliveryAssignment.DeliveryAssignmentService;
 import org.example.logistics_crm.service.driver.DriverService;
@@ -47,11 +53,18 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
 
         DeliveryAssignment deliveryAssignment = new DeliveryAssignment();
 
-        deliveryAssignment.setDriver(driverService.findDriverEntityById(requestDTO.driverId()));
-        deliveryAssignment.setOrder(orderService.findOrderEntityById(requestDTO.orderId()));
-        deliveryAssignment.setTruck(truckService.findTruckEntityById(requestDTO.truckId()));
+        Driver driver = driverService.findDriverEntityById(requestDTO.driverId());
+        Order order = orderService.findOrderEntityById(requestDTO.orderId());
+        Truck truck = truckService.findTruckEntityById(requestDTO.truckId());
+
+        deliveryAssignment.setDriver(driver);
+        deliveryAssignment.setOrder(order);
+        deliveryAssignment.setTruck(truck);
 
         deliveryAssignment.setDeliveryStatus(DeliveryStatus.PLANNED);
+        driver.setDriverStatus(DriverStatus.ON_DELIVERY);
+        order.setOrderStatus(OrderStatus.CONFIRMED);
+        truck.setTruckStatus(TruckStatus.BUSY);
 
         DeliveryAssignment savedAssignment = deliveryAssignmentRepository.save(deliveryAssignment);
 
@@ -59,8 +72,6 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
 
         return mapToDetails(savedAssignment);
     }
-
-
 
     @Override
     public DeliveryAssignmentDetailsResponseDTO findDeliveryAssignmentById(Long deliveryAssignmentId) {
