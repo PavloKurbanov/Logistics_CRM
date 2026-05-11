@@ -76,7 +76,9 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
         if (deliveryAssignmentId == null || deliveryAssignmentId <= 0) {
             throw new IllegalArgumentException("Delivery assignment id must be greater than 0");
         }
+
         log.debug("Attempting to find delivery assignment with ID: {}", deliveryAssignmentId);
+
         return deliveryAssignmentRepository.findById(deliveryAssignmentId).map(this::mapToDetails)
                 .orElseThrow(() -> new IllegalArgumentException("Delivery assignment with id " + deliveryAssignmentId +
                         " does not exist"));
@@ -131,7 +133,6 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
             throw new IllegalArgumentException("Truck with id: " + requestDTO.truckId() + " is currently on delivery and cannot be assigned to another delivery");
         }
     }
-
 
     private DeliveryAssignmentDetailsResponseDTO mapToDetails(DeliveryAssignment deliveryAssignment) {
         return new DeliveryAssignmentDetailsResponseDTO(

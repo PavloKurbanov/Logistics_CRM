@@ -60,8 +60,6 @@ public final class DeliveryAssignmentSpecification {
                         cb.lessThanOrEqualTo(root.get(DeliveryAssignment_.createdDate), searchRequest.createdDateTo()));
             }
 
-
-
             return cb.and(predicates.toArray(Predicate[]::new));
         });
     }
