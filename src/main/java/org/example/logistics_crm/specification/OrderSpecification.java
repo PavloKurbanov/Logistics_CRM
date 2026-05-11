@@ -123,6 +123,4 @@ public final class OrderSpecification {
             return cb.and(predicates.toArray(Predicate[]::new));
         };
     }
-
-
 }

@@ -2,22 +2,20 @@ package org.example.logistics_crm.service.deliveryAssignment.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.example.logistics_crm.dto.deliveryAssignment.CreateDeliveryAssignmentRequestDTO;
-import org.example.logistics_crm.dto.deliveryAssignment.DeliveryAssignmentDetailsResponseDTO;
-import org.example.logistics_crm.dto.deliveryAssignment.DeliveryAssignmentSearchRequestDTO;
+import org.example.logistics_crm.dto.deliveryAssignment.request.CreateDeliveryAssignmentRequestDTO;
+import org.example.logistics_crm.dto.deliveryAssignment.response.DeliveryAssignmentDetailsResponseDTO;
+import org.example.logistics_crm.dto.deliveryAssignment.request.DeliveryAssignmentSearchRequestDTO;
 import org.example.logistics_crm.entity.deliveryAssignment.DeliveryAssignment;
 import org.example.logistics_crm.entity.deliveryAssignment.DeliveryStatus;
 import org.example.logistics_crm.entity.driver.Driver;
-import org.example.logistics_crm.entity.driver.DriverStatus;
 import org.example.logistics_crm.entity.order.Order;
-import org.example.logistics_crm.entity.order.OrderStatus;
 import org.example.logistics_crm.entity.truck.Truck;
-import org.example.logistics_crm.entity.truck.TruckStatus;
 import org.example.logistics_crm.repository.DeliveryAssignmentRepository;
 import org.example.logistics_crm.service.deliveryAssignment.DeliveryAssignmentService;
 import org.example.logistics_crm.service.driver.DriverService;
 import org.example.logistics_crm.service.order.OrderService;
 import org.example.logistics_crm.service.truck.TruckService;
+import org.example.logistics_crm.specification.DeliveryAssignmentSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -61,10 +59,10 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
         deliveryAssignment.setOrder(order);
         deliveryAssignment.setTruck(truck);
 
-        deliveryAssignment.setDeliveryStatus(DeliveryStatus.PLANNED);
-        driver.setDriverStatus(DriverStatus.ON_DELIVERY);
-        order.setOrderStatus(OrderStatus.CONFIRMED);
-        truck.setTruckStatus(TruckStatus.BUSY);
+//        deliveryAssignment.setDeliveryStatus(DeliveryStatus.PLANNED);
+//        driver.setDriverStatus(DriverStatus.ON_DELIVERY);
+//        order.setOrderStatus(OrderStatus.CONFIRMED);
+//        truck.setTruckStatus(TruckStatus.BUSY);
 
         DeliveryAssignment savedAssignment = deliveryAssignmentRepository.save(deliveryAssignment);
 
@@ -75,22 +73,43 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
 
     @Override
     public DeliveryAssignmentDetailsResponseDTO findDeliveryAssignmentById(Long deliveryAssignmentId) {
-        return null;
+        if (deliveryAssignmentId == null || deliveryAssignmentId <= 0) {
+            throw new IllegalArgumentException("Delivery assignment id must be greater than 0");
+        }
+        log.debug("Attempting to find delivery assignment with ID: {}", deliveryAssignmentId);
+        return deliveryAssignmentRepository.findById(deliveryAssignmentId).map(this::mapToDetails)
+                .orElseThrow(() -> new IllegalArgumentException("Delivery assignment with id " + deliveryAssignmentId +
+                        " does not exist"));
     }
 
     @Override
-    public DeliveryAssignmentDetailsResponseDTO findDeliveryAssignmentByStatus(Long deliveryAssignmentId, Long deliveryId) {
-        return null;
+    public Page<DeliveryAssignmentDetailsResponseDTO> findDeliveryAssignmentByStatus(DeliveryStatus deliveryStatus, Pageable pageable) {
+        if (deliveryStatus == null) {
+            throw new IllegalArgumentException("Delivery status must not be null");
+        }
+        log.debug("Attempting to find delivery assignment by status: {}", deliveryStatus);
+        return deliveryAssignmentRepository.findAllByDeliveryStatus(deliveryStatus, pageable).map(this::mapToDetails);
     }
 
     @Override
     public Page<DeliveryAssignmentDetailsResponseDTO> findAllDeliveryAssignments(Pageable pageable) {
-        return null;
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable must not be null. Please provide pagination parameters.");
+        }
+        log.debug("Fetching all delivery assignment page request:  {}", pageable);
+        return deliveryAssignmentRepository.findAll(pageable).map(this::mapToDetails);
     }
 
     @Override
     public Page<DeliveryAssignmentDetailsResponseDTO> search(DeliveryAssignmentSearchRequestDTO requestDTO, Pageable pageable) {
-        return null;
+        if(requestDTO == null) {
+            throw new IllegalArgumentException("Delivery assignment search cannot be null");
+        }
+        if(pageable == null) {
+            throw new IllegalArgumentException("Pageable must not be null. Please provide pagination parameters.");
+        }
+        log.debug("Searching for delivery assignment with criteria: {}", requestDTO);
+        return deliveryAssignmentRepository.findAll(DeliveryAssignmentSpecification.search(requestDTO), pageable).map(this::mapToDetails);
     }
 
     private void validateAssignmentPossibility(CreateDeliveryAssignmentRequestDTO requestDTO) {
@@ -104,11 +123,11 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
             throw new IllegalArgumentException("Order with id: " + requestDTO.orderId() + " already has an active delivery assignment");
         }
 
-        if(deliveryAssignmentRepository.existsByDriverIdAndDeliveryStatus(requestDTO.driverId(), DeliveryStatus.IN_PROGRESS)){
+        if (deliveryAssignmentRepository.existsByDriverIdAndDeliveryStatus(requestDTO.driverId(), DeliveryStatus.IN_PROGRESS)) {
             throw new IllegalArgumentException("Driver with id: " + requestDTO.driverId() + " is currently on delivery and cannot be assigned to another delivery");
         }
 
-        if(deliveryAssignmentRepository.existsByTruckIdAndDeliveryStatus(requestDTO.truckId(), DeliveryStatus.IN_PROGRESS)){
+        if (deliveryAssignmentRepository.existsByTruckIdAndDeliveryStatus(requestDTO.truckId(), DeliveryStatus.IN_PROGRESS)) {
             throw new IllegalArgumentException("Truck with id: " + requestDTO.truckId() + " is currently on delivery and cannot be assigned to another delivery");
         }
     }
@@ -119,6 +138,8 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
                 deliveryAssignment.getId(),
                 deliveryAssignment.getOrder().getId(),
                 deliveryAssignment.getOrder().getOrderCode(),
+                deliveryAssignment.getOrder().getSenderClient().getFirstName() + " " + deliveryAssignment.getOrder().getSenderClient().getLastName(),
+                deliveryAssignment.getOrder().getReceiverClient().getFirstName() + " " + deliveryAssignment.getOrder().getReceiverClient().getLastName(),
                 deliveryAssignment.getDriver().getId(),
                 deliveryAssignment.getDriver().getFirstName() + " " + deliveryAssignment.getDriver().getLastName(),
                 deliveryAssignment.getTruck().getId(),

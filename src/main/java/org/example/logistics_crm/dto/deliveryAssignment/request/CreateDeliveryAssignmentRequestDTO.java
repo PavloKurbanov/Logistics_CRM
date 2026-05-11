@@ -1,4 +1,4 @@
-package org.example.logistics_crm.dto.deliveryAssignment;
+package org.example.logistics_crm.dto.deliveryAssignment.request;
 
 import jakarta.validation.constraints.NotNull;
 
