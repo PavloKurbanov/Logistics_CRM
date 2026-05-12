@@ -1,14 +1,18 @@
 package org.example.logistics_crm.specification;
 
 
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.example.logistics_crm.dto.deliveryAssignment.request.DeliveryAssignmentSearchRequestDTO;
 import org.example.logistics_crm.entity.deliveryAssignment.DeliveryAssignment;
 import org.example.logistics_crm.entity.deliveryAssignment.DeliveryAssignment_;
 import org.example.logistics_crm.entity.deliveryAssignment.DeliveryStatus;
+import org.example.logistics_crm.entity.driver.Driver;
 import org.example.logistics_crm.entity.driver.Driver_;
+import org.example.logistics_crm.entity.order.Order;
 import org.example.logistics_crm.entity.order.Order_;
+import org.example.logistics_crm.entity.truck.Truck;
 import org.example.logistics_crm.entity.truck.Truck_;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -24,8 +28,12 @@ public final class DeliveryAssignmentSpecification {
         return ((root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (searchRequest.orderId() != null) {
-                predicates.add(cb.equal(root.get(DeliveryAssignment_.order).get(Order_.id), searchRequest.orderId()));
+            Join<DeliveryAssignment, Order> orderJoin = root.join(DeliveryAssignment_.order);
+            Join<DeliveryAssignment, Driver> driverJoin = root.join(DeliveryAssignment_.driver);
+            Join<DeliveryAssignment, Truck> truckJoin = root.join(DeliveryAssignment_.truck);
+
+            if(searchRequest.orderId() != null){
+                predicates.add(cb.equal(orderJoin.get(Order_.id), searchRequest.orderId()));
             }
 
             if (searchRequest.driverId() != null) {
@@ -47,7 +55,7 @@ public final class DeliveryAssignmentSpecification {
 
             if(searchRequest.orderCode() != null && !searchRequest.orderCode().isBlank()){
                 predicates.add(cb.like(
-                        cb.lower(root.get(DeliveryAssignment_.order).get(Order_.orderCode)), searchRequest.orderCode()));
+                        cb.lower(orderJoin.get(Order_.orderCode)), searchRequest.orderCode() + "%"));
             }
 
             if(searchRequest.createdDateFrom() != null){
