@@ -104,10 +104,10 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
 
     @Override
     public Page<DeliveryAssignmentDetailsResponseDTO> search(DeliveryAssignmentSearchRequestDTO requestDTO, Pageable pageable) {
-        if(requestDTO == null) {
+        if (requestDTO == null) {
             throw new IllegalArgumentException("Delivery assignment search cannot be null");
         }
-        if(pageable == null) {
+        if (pageable == null) {
             throw new IllegalArgumentException("Pageable must not be null. Please provide pagination parameters.");
         }
         log.debug("Searching for delivery assignment with criteria: {}", requestDTO);
