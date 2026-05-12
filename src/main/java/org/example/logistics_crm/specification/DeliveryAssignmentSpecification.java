@@ -68,6 +68,7 @@ public final class DeliveryAssignmentSpecification {
         if (searchRequest.createdDateFrom() != null) {
             predicates.add(cb.greaterThanOrEqualTo(root.get(DeliveryAssignment_.createdDate), searchRequest.createdDateFrom()));
         }
+
         if (searchRequest.createdDateTo() != null) {
             predicates.add(cb.lessThanOrEqualTo(root.get(DeliveryAssignment_.createdDate), searchRequest.createdDateTo()));
         }
