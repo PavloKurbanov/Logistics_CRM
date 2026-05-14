@@ -1,6 +1,6 @@
 package org.example.logistics_crm.service.deliveryAssignment.impl;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.example.logistics_crm.dto.deliveryAssignment.request.CreateDeliveryAssignmentRequestDTO;
 import org.example.logistics_crm.dto.deliveryAssignment.response.DeliveryAssignmentDetailsResponseDTO;
@@ -8,8 +8,11 @@ import org.example.logistics_crm.dto.deliveryAssignment.request.DeliveryAssignme
 import org.example.logistics_crm.entity.deliveryAssignment.DeliveryAssignment;
 import org.example.logistics_crm.entity.deliveryAssignment.DeliveryStatus;
 import org.example.logistics_crm.entity.driver.Driver;
+import org.example.logistics_crm.entity.driver.DriverStatus;
 import org.example.logistics_crm.entity.order.Order;
+import org.example.logistics_crm.entity.order.OrderStatus;
 import org.example.logistics_crm.entity.truck.Truck;
+import org.example.logistics_crm.entity.truck.TruckStatus;
 import org.example.logistics_crm.repository.DeliveryAssignmentRepository;
 import org.example.logistics_crm.service.deliveryAssignment.DeliveryAssignmentService;
 import org.example.logistics_crm.service.driver.DriverService;
@@ -21,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 
 @Slf4j
@@ -44,34 +48,41 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
     @Override
     @Transactional
     public DeliveryAssignmentDetailsResponseDTO createDeliveryAssignment(CreateDeliveryAssignmentRequestDTO requestDTO) {
-        validateAssignmentPossibility(requestDTO);
+
 
         log.debug("Attempting to create delivery assignment with Order_ID: {}, Driver_ID: {}, Truck_ID: {} ",
                 requestDTO.orderId(), requestDTO.driverId(), requestDTO.truckId());
-
-        DeliveryAssignment deliveryAssignment = new DeliveryAssignment();
 
         Driver driver = driverService.findDriverEntityById(requestDTO.driverId());
         Order order = orderService.findOrderEntityById(requestDTO.orderId());
         Truck truck = truckService.findTruckEntityById(requestDTO.truckId());
 
+        if (!validateEntity(driver, order, truck)) {
+            throw new InvalidParameterException("Driver or Truck ID is invalid");
+        }
+
+        log.debug("Validation and resource status check for Driver: {}, Truck: {}, Order: {}",
+                driver.getId(), truck.getId(), order.getId());
+
+        validateResourcesAvailability(driver, order, truck);
+
+        DeliveryAssignment deliveryAssignment = new DeliveryAssignment();
         deliveryAssignment.setDriver(driver);
         deliveryAssignment.setOrder(order);
         deliveryAssignment.setTruck(truck);
 
-//        deliveryAssignment.setDeliveryStatus(DeliveryStatus.PLANNED);
-//        driver.setDriverStatus(DriverStatus.ON_DELIVERY);
-//        order.setOrderStatus(OrderStatus.CONFIRMED);
-//        truck.setTruckStatus(TruckStatus.BUSY);
+        deliveryAssignment.setDeliveryStatus(DeliveryStatus.PLANNED);
+        updateResourceStatuses(driver, order, truck);
 
         DeliveryAssignment savedAssignment = deliveryAssignmentRepository.save(deliveryAssignment);
 
-        log.info("Delivery assignment created with ID: {}", savedAssignment.getId());
+        log.info("Successfully created assignment with ID: {}", savedAssignment.getId());
 
         return mapToDetails(savedAssignment);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public DeliveryAssignmentDetailsResponseDTO findDeliveryAssignmentById(Long deliveryAssignmentId) {
         if (deliveryAssignmentId == null || deliveryAssignmentId <= 0) {
             throw new IllegalArgumentException("Delivery assignment id must be greater than 0");
@@ -85,15 +96,7 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
     }
 
     @Override
-    public Page<DeliveryAssignmentDetailsResponseDTO> findDeliveryAssignmentByStatus(DeliveryStatus deliveryStatus, Pageable pageable) {
-        if (deliveryStatus == null) {
-            throw new IllegalArgumentException("Delivery status must not be null");
-        }
-        log.debug("Attempting to find delivery assignment by status: {}", deliveryStatus);
-        return deliveryAssignmentRepository.findAllByDeliveryStatus(deliveryStatus, pageable).map(this::mapToDetails);
-    }
-
-    @Override
+    @Transactional(readOnly = true)
     public Page<DeliveryAssignmentDetailsResponseDTO> findAllDeliveryAssignments(Pageable pageable) {
         if (pageable == null) {
             throw new IllegalArgumentException("Pageable must not be null. Please provide pagination parameters.");
@@ -103,6 +106,7 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<DeliveryAssignmentDetailsResponseDTO> search(DeliveryAssignmentSearchRequestDTO requestDTO, Pageable pageable) {
         if (requestDTO == null) {
             throw new IllegalArgumentException("Delivery assignment search cannot be null");
@@ -114,24 +118,40 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
         return deliveryAssignmentRepository.findAll(DeliveryAssignmentSpecification.search(requestDTO), pageable).map(this::mapToDetails);
     }
 
-    private void validateAssignmentPossibility(CreateDeliveryAssignmentRequestDTO requestDTO) {
-        if (requestDTO == null) {
-            throw new IllegalArgumentException("Request Delivery Assignment cannot be null");
+    @Transactional
+    public void deleteDeliveryAssignment(Long deliveryAssignmentId) {
+        if (deliveryAssignmentId == null || deliveryAssignmentId <= 0) {
+            throw new IllegalArgumentException("Delivery assignment id must be greater than 0");
+        }
+        log.debug("Attempting to delete delivery assignment with ID: {}", deliveryAssignmentId);
+
+        DeliveryAssignment deliveryAssignment = deliveryAssignmentRepository.findById(deliveryAssignmentId)
+                .orElseThrow(() -> new IllegalArgumentException("Delivery assignment with id " + deliveryAssignmentId + " does not exist"));
+
+        deliveryAssignmentRepository.delete(deliveryAssignment);
+        log.info("Delivery assignment with id: {} successfully deleted", deliveryAssignment.getId());
+    }
+
+    private void validateResourcesAvailability(Driver driver, Order order, Truck truck) {
+
+        if (driver.getDriverStatus() != DriverStatus.AVAILABLE) {
+            throw new IllegalArgumentException("Driver is not available. Current status: " + driver.getDriverStatus());
         }
 
-        List<DeliveryStatus> deliveryStatuses = List.of(DeliveryStatus.PLANNED, DeliveryStatus.IN_PROGRESS);
-
-        if (deliveryAssignmentRepository.existsByOrderIdAndDeliveryStatusIn(requestDTO.orderId(), deliveryStatuses)) {
-            throw new IllegalArgumentException("Order with id: " + requestDTO.orderId() + " already has an active delivery assignment");
+        if (truck.getTruckStatus() != TruckStatus.AVAILABLE) {
+            throw new IllegalArgumentException("Truck is not available. Current status: " + truck.getTruckStatus());
         }
 
-        if (deliveryAssignmentRepository.existsByDriverIdAndDeliveryStatus(requestDTO.driverId(), DeliveryStatus.IN_PROGRESS)) {
-            throw new IllegalArgumentException("Driver with id: " + requestDTO.driverId() + " is currently on delivery and cannot be assigned to another delivery");
+        if (deliveryAssignmentRepository.existsByOrderIdAndDeliveryStatusIn(
+                order.getId(), List.of(DeliveryStatus.PLANNED, DeliveryStatus.IN_PROGRESS))) {
+            throw new IllegalArgumentException("Order already has an active assignment");
         }
+    }
 
-        if (deliveryAssignmentRepository.existsByTruckIdAndDeliveryStatus(requestDTO.truckId(), DeliveryStatus.IN_PROGRESS)) {
-            throw new IllegalArgumentException("Truck with id: " + requestDTO.truckId() + " is currently on delivery and cannot be assigned to another delivery");
-        }
+    private void updateResourceStatuses(Driver driver, Order order, Truck truck) {
+        driver.setDriverStatus(DriverStatus.ON_DELIVERY);
+        truck.setTruckStatus(TruckStatus.BUSY);
+        order.setOrderStatus(OrderStatus.CONFIRMED);
     }
 
     private DeliveryAssignmentDetailsResponseDTO mapToDetails(DeliveryAssignment deliveryAssignment) {
@@ -149,5 +169,9 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
                 deliveryAssignment.getCreatedDate(),
                 deliveryAssignment.getUpdatedDate()
         );
+    }
+
+    private boolean validateEntity(Driver driver, Order order, Truck truck) {
+        return truck != null && driver != null && order != null;
     }
 }
