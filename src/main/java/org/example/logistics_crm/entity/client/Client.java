@@ -38,6 +38,11 @@ public class Client {
     private String password;
 
     @NotNull
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ClientStatus status = ClientStatus.PENDING_VERIFICATION;
+
+    @NotNull
     @Column(name = "create_date", nullable = false)
     private LocalDateTime createdDate;
 
@@ -99,6 +104,14 @@ public class Client {
 
     public String getPassword() {
         return password;
+    }
+
+    public ClientStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ClientStatus status) {
+        this.status = status;
     }
 
     public void setPassword(String password) {

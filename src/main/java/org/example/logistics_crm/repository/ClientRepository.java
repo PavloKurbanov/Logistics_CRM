@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface ClientRepository extends JpaRepository<Client, Long>, JpaSpecificationExecutor<Client> {
     boolean existsByEmailAndIdNot(String email, Long id);
@@ -14,4 +16,6 @@ public interface ClientRepository extends JpaRepository<Client, Long>, JpaSpecif
     boolean existsByPhoneNumber(String phoneNumber);
 
     boolean existsByEmail(String email);
+
+    Optional<Client> findByEmail(String email);
 }

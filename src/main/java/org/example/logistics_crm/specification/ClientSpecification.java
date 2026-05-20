@@ -1,7 +1,9 @@
 package org.example.logistics_crm.specification;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.logistics_crm.entity.client.Client;
 import org.example.logistics_crm.dto.client.request.ClientSearchRequestDTO;
+import org.example.logistics_crm.entity.client.ClientStatus;
 import org.example.logistics_crm.entity.client.Client_;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -10,6 +12,7 @@ import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public final class ClientSpecification {
     private ClientSpecification() {
     }
@@ -42,6 +45,17 @@ public final class ClientSpecification {
                 predicates.add(
                         cb.equal(root.get(Client_.phoneNumber), request.phoneNumber())
                 );
+            }
+
+            if(request.status() != null &&  !request.status().isBlank()) {
+                try{
+                    ClientStatus status = ClientStatus.valueOf(request.status().toUpperCase());
+                    predicates.add(
+                            cb.equal(root.get(Client_.status), status)
+                    );
+                } catch (IllegalArgumentException e){
+                    log.warn("Invalid status: {}", request.status());
+                }
             }
 
             if (request.createdFrom() != null) {

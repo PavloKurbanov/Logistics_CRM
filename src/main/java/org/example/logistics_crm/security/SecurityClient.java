@@ -1,9 +1,10 @@
 package org.example.logistics_crm.security;
 
-import org.example.logistics_crm.entity.user.User;
-import org.example.logistics_crm.entity.user.UserRole;
+import org.example.logistics_crm.entity.client.Client;
+import org.example.logistics_crm.entity.client.ClientStatus;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,12 +14,13 @@ import java.util.List;
 import java.util.Objects;
 
 @NullMarked
-public class SecurityUser implements UserDetails {
-    private final User user;
+public class SecurityClient implements UserDetails {
 
-    public SecurityUser(User user) {
-        Objects.requireNonNull(user, "User must not be null");
-        this.user = user;
+    private final Client client;
+
+    public SecurityClient(Client client) {
+        Objects.requireNonNull(client, "Client must not be null");
+        this.client = client;
     }
 
     @Override
@@ -38,29 +40,26 @@ public class SecurityUser implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        if (user.getUserRole() == null) {
+        if(client.getStatus() == null){
             return false;
         }
-        return user.getUserRole() != UserRole.PENDING;
+        return client.getStatus() == ClientStatus.ACTIVE;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (user.getUserRole() == null) {
-            return List.of();
-        }
-        String userRoleName = "ROLE_" + user.getUserRole().name().toUpperCase();
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(userRoleName);
+        String clientRole = "ROLE_CLIENT";
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(clientRole);
         return List.of(authority);
     }
 
     @Override
     public @Nullable String getPassword() {
-        return user.getPassword();
+        return client.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getEmail();
+        return client.getEmail();
     }
 }

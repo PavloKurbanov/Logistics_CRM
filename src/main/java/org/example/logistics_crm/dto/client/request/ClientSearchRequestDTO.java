@@ -7,6 +7,7 @@ public record  ClientSearchRequestDTO(
         String lastName,
         String email,
         String phoneNumber,
+        String status,
         LocalDateTime createdFrom,
         LocalDateTime createdTo
 ) {
