@@ -10,7 +10,7 @@ public record OrderSearchRequestDTO(
         String senderLastName,
         String receiverFirstName,
         String receiverLastName,
-        OrderStatus status,
+        String status,
         BigDecimal minPrice,
         BigDecimal maxPrice,
         Double minWeight,

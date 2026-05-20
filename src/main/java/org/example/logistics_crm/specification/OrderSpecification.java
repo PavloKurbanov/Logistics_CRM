@@ -2,16 +2,20 @@ package org.example.logistics_crm.specification;
 
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
+import lombok.extern.slf4j.Slf4j;
 import org.example.logistics_crm.entity.client.Client;
 import org.example.logistics_crm.entity.client.Client_;
 import org.example.logistics_crm.entity.order.Order;
 import org.example.logistics_crm.dto.order.request.OrderSearchRequestDTO;
+import org.example.logistics_crm.entity.order.OrderStatus;
 import org.example.logistics_crm.entity.order.Order_;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
+@Slf4j
 public final class OrderSpecification {
 
     private OrderSpecification() {
@@ -57,9 +61,14 @@ public final class OrderSpecification {
             }
 
             if (request.status() != null) {
-                predicates.add(
-                        cb.equal(root.get(Order_.orderStatus), request.status())
-                );
+                try {
+                    OrderStatus status = OrderStatus.valueOf(request.status().toUpperCase(Locale.ROOT));
+                    predicates.add(
+                            cb.equal(root.get(Order_.orderStatus), status)
+                    );
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid status: {}", request.status());
+                }
             }
 
             if (request.minPrice() != null) {

@@ -8,7 +8,7 @@ public record DriverSearchRequestDTO(
         String firstName,
         String lastName,
         String licenseNumber,
-        DriverStatus status,
+        String status,
         String phoneNumber,
         LocalDateTime createdFrom,
         LocalDateTime createdTo

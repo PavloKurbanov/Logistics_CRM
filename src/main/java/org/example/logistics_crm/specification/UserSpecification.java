@@ -1,14 +1,18 @@
 package org.example.logistics_crm.specification;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.logistics_crm.entity.user.User;
 import org.example.logistics_crm.dto.user.request.UserSearchRequestDTO;
+import org.example.logistics_crm.entity.user.UserRole;
 import org.example.logistics_crm.entity.user.User_;
 import org.springframework.data.jpa.domain.Specification;
 import jakarta.persistence.criteria.Predicate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
+@Slf4j
 public final class UserSpecification {
 
     private UserSpecification() {
@@ -42,7 +46,12 @@ public final class UserSpecification {
             }
 
             if (request.userRole() != null) {
-                predicates.add(cb.equal(root.get(User_.userRole), request.userRole()));
+                try {
+                    UserRole userRole = UserRole.valueOf(request.userRole().toUpperCase(Locale.ROOT));
+                    predicates.add(cb.equal(root.get(User_.userRole), userRole));
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid user role: {}", request.userRole());
+                }
             }
 
             if (request.createdFrom() != null) {

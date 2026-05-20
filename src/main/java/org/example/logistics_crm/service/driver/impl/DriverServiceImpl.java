@@ -36,10 +36,8 @@ public class DriverServiceImpl implements DriverService {
     @Override
     @Transactional
     public DriverDetailsResponseDTO createDriver(CreateDriverRequestDTO createDriverRequestDTO) {
-        log.debug("Attempt to create a driver with a phoneNumber: {}, licenseNumber: {}", createDriverRequestDTO.phoneNumber(), createDriverRequestDTO.licenseNumber());
-        if (createDriverRequestDTO == null) {
-            throw new IllegalArgumentException("Request to create a driver cannot be null.");
-        }
+        log.debug("Attempt to create a driver with a phoneNumber: {}, licenseNumber: {}"
+                , createDriverRequestDTO.phoneNumber(), createDriverRequestDTO.licenseNumber());
 
         if (driverRepository.existsByLicenseNumber(createDriverRequestDTO.licenseNumber())) {
             throw new IllegalArgumentException("Driver with license number " + createDriverRequestDTO.licenseNumber() + " already exists.");

@@ -1,17 +1,18 @@
 package org.example.logistics_crm.specification;
 
 import jakarta.persistence.criteria.Predicate;
+import lombok.extern.slf4j.Slf4j;
 import org.example.logistics_crm.dto.driver.request.DriverSearchRequestDTO;
 import org.example.logistics_crm.entity.driver.Driver;
+import org.example.logistics_crm.entity.driver.DriverStatus;
 import org.example.logistics_crm.entity.driver.Driver_;
 import org.springframework.data.jpa.domain.Specification;
 
-
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-
+@Slf4j
 public final class DriverSpecification {
     private DriverSpecification() {
     }
@@ -44,28 +45,33 @@ public final class DriverSpecification {
                 );
             }
 
-            if(request.status() != null) {
-                predicates.add(cb.equal(root.get(Driver_.driverStatus), request.status()));
+            if (request.status() != null) {
+                try {
+                    DriverStatus status = DriverStatus.valueOf(request.status().toUpperCase(Locale.ROOT));
+                    predicates.add(cb.equal(root.get(Driver_.driverStatus), status));
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid status: {}", request.status());
+                }
             }
 
-            if(request.phoneNumber() != null && !request.phoneNumber().isBlank()) {
+            if (request.phoneNumber() != null && !request.phoneNumber().isBlank()) {
                 predicates.add(
                         cb.equal(root.get(Driver_.PHONE_NUMBER), request.phoneNumber())
                 );
             }
 
-            if(request.createdFrom() != null) {
+            if (request.createdFrom() != null) {
                 predicates.add(
                         cb.greaterThanOrEqualTo(root.get(Driver_.createdDate), request.createdFrom())
                 );
             }
 
-            if(request.createdTo() != null) {
+            if (request.createdTo() != null) {
                 predicates.add(
                         cb.lessThanOrEqualTo(root.get(Driver_.createdDate), request.createdTo()));
             }
 
-            if(predicates.isEmpty()) {
+            if (predicates.isEmpty()) {
                 return cb.conjunction();
             }
 

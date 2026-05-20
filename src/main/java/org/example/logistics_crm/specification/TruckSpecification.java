@@ -1,15 +1,19 @@
 package org.example.logistics_crm.specification;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.logistics_crm.dto.truck.request.SearchTruckRequestDTO;
 import org.example.logistics_crm.entity.truck.Truck;
+import org.example.logistics_crm.entity.truck.TruckStatus;
 import org.example.logistics_crm.entity.truck.Truck_;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import jakarta.persistence.criteria.Predicate;
 
+@Slf4j
 public final class TruckSpecification {
     private TruckSpecification() {
     }
@@ -55,6 +59,17 @@ public final class TruckSpecification {
                 predicates.add(
                         cb.lessThanOrEqualTo(root.get(Truck_.capacity), request.capacityTo())
                 );
+            }
+
+            if (request.status() != null && !request.status().isBlank()) {
+                try {
+                    TruckStatus truckStatus = TruckStatus.valueOf(request.status().toUpperCase(Locale.ROOT));
+                    predicates.add(
+                            cb.equal(root.get(Truck_.truckStatus), truckStatus)
+                    );
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid status: {}", request.status());
+                }
             }
 
             if (request.createdFrom() != null) {

@@ -10,7 +10,7 @@ public record SearchTruckRequestDTO(
         String licenseNumber,
         Double capacityFrom,
         Double capacityTo,
-        TruckStatus status,
+        String status,
         LocalDateTime createdFrom,
         LocalDateTime createdTo
 ) {

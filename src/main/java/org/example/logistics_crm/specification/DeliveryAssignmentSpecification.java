@@ -22,6 +22,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Slf4j
 public final class DeliveryAssignmentSpecification {
@@ -58,7 +59,7 @@ public final class DeliveryAssignmentSpecification {
                                           Root<DeliveryAssignment> root, DeliveryAssignmentSearchRequestDTO searchRequest) {
         if (isNotBlank(searchRequest.status())) {
             try {
-                DeliveryStatus status = DeliveryStatus.valueOf(searchRequest.status());
+                DeliveryStatus status = DeliveryStatus.valueOf(searchRequest.status().toUpperCase(Locale.ROOT));
                 predicates.add(cb.equal(root.get(DeliveryAssignment_.deliveryStatus), status));
             } catch (IllegalArgumentException e) {
                 log.warn("Invalid status: {}", searchRequest.status());
