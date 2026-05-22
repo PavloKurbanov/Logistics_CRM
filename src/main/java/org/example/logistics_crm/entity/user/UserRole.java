@@ -5,7 +5,8 @@ public enum UserRole {
     MANAGER,
     DISPATCHER,
     OPERATOR,
-    PENDING
+    PENDING,
+    DRIVER
 }
 
 /* ADMIN
