@@ -49,7 +49,7 @@ public class SecurityConfig {
 
     @Bean
     @Order(1)
-    public SecurityFilterChain clientSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain clientSecurityFilterChain(HttpSecurity http) {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
@@ -82,7 +82,7 @@ public class SecurityConfig {
 
     @Bean
     @Order(2)
-    public SecurityFilterChain staffSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain staffSecurityFilterChain(HttpSecurity http) {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
