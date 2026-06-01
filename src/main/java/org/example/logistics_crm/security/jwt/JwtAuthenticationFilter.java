@@ -58,7 +58,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             UserDetailsService userDetailsService = selectUserDetailsService(request);
             UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
-
             // 3. Якщо токен математично валідний — створюємо квиток автентифікації для Spring
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(

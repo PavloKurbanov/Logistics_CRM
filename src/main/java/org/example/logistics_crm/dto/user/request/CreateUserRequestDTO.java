@@ -14,5 +14,6 @@ public record CreateUserRequestDTO(
         @NotBlank
         String phoneNumber,
         @NotBlank
-        String password) {
+        String password
+) {
 }
