@@ -1,5 +1,6 @@
 package org.example.logistics_crm.service.user;
 
+import org.example.logistics_crm.dto.auth.RegistrationDTO;
 import org.example.logistics_crm.entity.user.User;
 import org.example.logistics_crm.dto.user.request.CreateUserRequestDTO;
 import org.example.logistics_crm.dto.user.request.UserSearchRequestDTO;
@@ -26,4 +27,8 @@ public interface UserService {
     boolean existsByEmail(String email, Long userId);
 
     boolean existsByPhoneNumber(String phoneNumber, Long userId);
+
+    String login(String email, String password);
+
+    String register(CreateUserRequestDTO createUserRequestDTO);
 }

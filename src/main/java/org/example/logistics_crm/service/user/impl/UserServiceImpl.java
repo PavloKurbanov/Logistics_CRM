@@ -2,12 +2,14 @@ package org.example.logistics_crm.service.user.impl;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.logistics_crm.dto.auth.RegistrationDTO;
 import org.example.logistics_crm.dto.user.request.CreateUserRequestDTO;
 import org.example.logistics_crm.dto.user.request.UserSearchRequestDTO;
 import org.example.logistics_crm.dto.user.response.UserDetailsResponseDTO;
 import org.example.logistics_crm.dto.user.response.UserListResponseDTO;
 import org.example.logistics_crm.entity.user.User;
 import org.example.logistics_crm.repository.UserRepository;
+import org.example.logistics_crm.security.jwt.JwtService;
 import org.example.logistics_crm.service.user.UserService;
 import org.example.logistics_crm.specification.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +25,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -157,6 +161,30 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public boolean existsByPhoneNumber(String phoneNumber, Long userId) {
         return userRepository.existsByPhoneNumberAndIdNot(phoneNumber, userId);
+    }
+
+    @Override
+    public String login(String email, String password) {
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("Email can't be null");
+        }
+        if (password == null || password.isBlank()) {
+            throw new IllegalArgumentException("Password can't be null");
+        }
+        User user = userRepository.findByEmail(email).orElseThrow(()
+                -> new IllegalArgumentException("User not found with email: " + email));
+        passwordEncoder.matches(password, user.getPassword());
+        log.info("User with id: {} successfully authenticated", user.getId());
+        return jwtService.generateTokenUser(user);
+    }
+
+    @Override
+    public String register(CreateUserRequestDTO createUserRequestDTO) {
+        UserDetailsResponseDTO user = createUser(createUserRequestDTO);
+
+        User newUser = userRepository.findByEmail(user.email()).orElseThrow(()
+                -> new IllegalArgumentException("User not found with email: " + user.email()));
+        return jwtService.generateTokenUser(newUser);
     }
 
     private UserDetailsResponseDTO mapToDetails(User user) {

@@ -7,6 +7,7 @@ import org.example.logistics_crm.dto.client.response.ClientDetailsResponseDTO;
 import org.example.logistics_crm.dto.client.response.ClientListResponseDTO;
 import org.example.logistics_crm.entity.client.Client;
 import org.example.logistics_crm.repository.ClientRepository;
+import org.example.logistics_crm.security.jwt.JwtService;
 import org.example.logistics_crm.service.client.ClientService;
 import org.example.logistics_crm.specification.ClientSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +22,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Autowired
-    public ClientServiceImpl(ClientRepository clientRepository, PasswordEncoder passwordEncoder) {
+    public ClientServiceImpl(ClientRepository clientRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.clientRepository = clientRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -155,6 +158,34 @@ public class ClientServiceImpl implements ClientService {
 
         return clientRepository.findById(clientId)
                 .orElseThrow(() -> new IllegalArgumentException("Client with ID: " + clientId + " not found"));
+    }
+
+    @Override
+    public String login(String login, String password) {
+        log.debug("Attempting to authenticate client with login: {}", login);
+
+        if (login == null || login.isBlank()) {
+            throw new IllegalArgumentException("Login can't be null");
+        }
+        if (password == null || password.isBlank()) {
+            throw new IllegalArgumentException("Password can't be null");
+        }
+        Client client = clientRepository.findByEmail(login).orElseThrow(()
+                -> new IllegalArgumentException("Client with login: " + login + " not found"));
+
+        passwordEncoder.matches(password, client.getPassword());
+
+        log.info("Client with id: {} successfully authenticated", client.getId());
+        return jwtService.generateTokenClient(client);
+    }
+
+    @Override
+    public String register(CreateClientRequestDTO createClientRequestDTO) {
+        log.debug("Attempting to register client with email: {}", createClientRequestDTO.email());
+        ClientDetailsResponseDTO client = createClient(createClientRequestDTO);
+        Client newClient = clientRepository.findByEmail(client.email()).orElseThrow(()
+                -> new IllegalArgumentException("Client with email: " + client.email() + " not found"));
+        return jwtService.generateTokenClient(newClient);
     }
 
     private Page<ClientListResponseDTO> mapToList(Page<Client> clientPage) {

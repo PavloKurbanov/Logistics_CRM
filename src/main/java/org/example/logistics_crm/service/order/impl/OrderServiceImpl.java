@@ -154,8 +154,9 @@ public class OrderServiceImpl implements OrderService {
         orderStatusValidators.getOrDefault(orderStatus, orderStatusValidators.get(OrderStatus.UNSUPPORTED)).validate(order);
 
         order.setOrderStatus(orderStatus);
+        Order savedOrder = orderRepository.save(order);
         log.info("Order with ID: {} successfully updated to status: {}", orderId, orderStatus);
-        return mapToDetailsResponseDTO(order);
+        return mapToDetailsResponseDTO(savedOrder);
     }
 
     @Override
