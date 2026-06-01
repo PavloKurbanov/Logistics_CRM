@@ -35,20 +35,6 @@ public class JwtService {
         return claim.get(name).toString();
     }
 
-//    public String generateToken(UserDetails userDetails) {
-//        return generateToken(new HashMap<>(), userDetails);
-//    }
-
-//    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-//        return Jwts.builder()
-//                .setClaims(extraClaims)
-//                .setSubject(userDetails.getUsername())
-//                .setIssuedAt(new Date(System.currentTimeMillis()))
-//                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-//                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
-//                .compact();
-//    }
-
     public String generateTokenClient(Client client) {
         return Jwts.builder()
                 .setSubject(client.getEmail())
@@ -78,10 +64,7 @@ public class JwtService {
         JwtParser jwtParser = Jwts.parser().setSigningKey(SECRET_KEY);
         Claims claim = jwtParser.parseClaimsJws(token).getBody();
         Date expiration = claim.getExpiration();
-        if (expiration.before(new Date())) {
-            return true;
-        }
-        return false;
+        return expiration.before(new Date());
     }
 
 

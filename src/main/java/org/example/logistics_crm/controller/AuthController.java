@@ -2,10 +2,7 @@ package org.example.logistics_crm.controller;
 
 import org.example.logistics_crm.dto.auth.RegistrationDTO;
 import org.example.logistics_crm.dto.client.request.CreateClientRequestDTO;
-import org.example.logistics_crm.dto.client.response.ClientDetailsResponseDTO;
 import org.example.logistics_crm.dto.user.request.CreateUserRequestDTO;
-import org.example.logistics_crm.dto.user.response.UserDetailsResponseDTO;
-import org.example.logistics_crm.security.jwt.JwtService;
 import org.example.logistics_crm.service.client.ClientService;
 import org.example.logistics_crm.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

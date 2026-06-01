@@ -44,7 +44,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) {
         return configuration.getAuthenticationManager();
     }
 
@@ -56,7 +56,7 @@ public class SecurityConfig {
 
     @Bean
     @Order(1)
-    public SecurityFilterChain clientSecurityFilterChain(HttpSecurity http, JwtAuthenticationFilter filter) throws Exception {
+    public SecurityFilterChain clientSecurityFilterChain(HttpSecurity http, JwtAuthenticationFilter filter) {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
@@ -89,8 +89,7 @@ public class SecurityConfig {
 
     @Bean
     @Order(2)
-    public SecurityFilterChain staffSecurityFilterChain(HttpSecurity http,
-                                                        JwtAuthenticationFilter filter) throws Exception {
+    public SecurityFilterChain staffSecurityFilterChain(HttpSecurity http, JwtAuthenticationFilter filter) {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
