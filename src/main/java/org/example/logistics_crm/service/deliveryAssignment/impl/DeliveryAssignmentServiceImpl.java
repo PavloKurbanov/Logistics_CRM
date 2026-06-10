@@ -49,7 +49,6 @@ public class DeliveryAssignmentServiceImpl implements DeliveryAssignmentService 
     @Transactional
     public DeliveryAssignmentDetailsResponseDTO createDeliveryAssignment(CreateDeliveryAssignmentRequestDTO requestDTO) {
 
-
         log.debug("Attempting to create delivery assignment with Order_ID: {}, Driver_ID: {}, Truck_ID: {} ",
                 requestDTO.orderId(), requestDTO.driverId(), requestDTO.truckId());
 
