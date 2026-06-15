@@ -1,0 +1,30 @@
+﻿USER1 - ADMIN																	Key: Authorization
+{
+    "firstName" : "User1",
+    "lastName" : "User1",
+    "email" : "user@gmail.com",
+    "phoneNumber" : "+38000000001",
+    "password" : "User1"
+}
+TOKEN:Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyQGdtYWlsLmNvbSIsImlhdCI6MTc4MTUwNzQ3NywiZXhwIjoxNzgxNTkzODc3LCJST0xFIjoiUk9MRV9VU0VSIiwiZW1haWwiOiJ1c2VyQGdtYWlsLmNvbSIsInVzZXJJZCI6MX0.6V-YmySORKZHKV1h6WHVD0CJ4r2YOSqEBArmmhJnxM8
+
+USER2
+{
+    "firstName" : "User2",
+    "lastName" : "User2",
+    "email" : "user2@gmail.com",
+    "phoneNumber" : "+38000000002",
+    "password" : "User2"
+}
+TOKEN:Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMkBnbWFpbC5jb20iLCJpYXQiOjE3ODE1MDk1NzMsImV4cCI6MTc4MTU5NTk3MywidXNlcklkIjoyLCJlbWFpbCI6InVzZXIyQGdtYWlsLmNvbSIsIlJPTEUiOiJST0xFX1VTRVIifQ.b6_lcgY94auKwd7wtgtnD0Hys06-Zok7PWsTOUZTznk
+
+CLIENT1
+{
+    "firstName" : "Client1",
+    "lastName" : "Client1",
+    "email" : "client@gmail.com",
+    "phoneNumber" : "+38000000011",
+    "password" : "Client1"
+}
+TOKEN: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnRAZ21haWwuY29tIiwiaWF0IjoxNzgxNTA4MzU3LCJleHAiOjE3ODE1OTQ3NTcsImNsaWVudElkIjoxLCJST0xFIjoiUk9MRV9DTElFTlQiLCJlbWFpbCI6ImNsaWVudEBnbWFpbC5jb20ifQ.SV1HRzBc2LtcGfnFB18Q5xPyCQ5vtKAHRtgQDJVrzqI
+

@@ -1,6 +1,8 @@
 package org.example.logistics_crm.service.user.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.example.logistics_crm.entity.user.User;
 import org.example.logistics_crm.service.user.AccountUserService;
@@ -30,6 +32,10 @@ public class AccountUserServiceImpl implements AccountUserService {
     @Transactional
     public UserDetailsResponseDTO changePassword(Long userId, ChangeUserPasswordRequestDTO changeUserPasswordRequestDTO) {
         log.debug("Attempting to change password for user with id: {}", userId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+
         User user = validateUserAndPassword(userId, changeUserPasswordRequestDTO.oldPassword());
 
         String newPassword = changeUserPasswordRequestDTO.newPassword();
