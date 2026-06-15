@@ -7,9 +7,13 @@ import org.example.logistics_crm.dto.client.request.ChangeClientEmailRequestDTO;
 import org.example.logistics_crm.dto.client.request.ChangeClientPasswordRequestDTO;
 import org.example.logistics_crm.dto.client.request.ChangeClientPhoneNumberDTO;
 import org.example.logistics_crm.dto.client.response.ClientDetailsResponseDTO;
+import org.example.logistics_crm.security.SecurityClient;
 import org.example.logistics_crm.service.client.AccountClientService;
 import org.example.logistics_crm.service.client.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +34,7 @@ public class AccountClientServiceImpl implements AccountClientService {
     @Transactional
     public ClientDetailsResponseDTO changePassword(Long clientId, ChangeClientPasswordRequestDTO changeClientPasswordRequestDTO) {
         log.debug("Attempting to change password for client with id: {}", clientId);
+        ensureTargetClientIsCurrentUser(clientId);
         Client client = validateClientAndPassword(clientId, changeClientPasswordRequestDTO.oldPassword());
 
         if (!changeClientPasswordRequestDTO.newPassword().equals(changeClientPasswordRequestDTO.confirmNewPassword())) {
@@ -50,6 +55,7 @@ public class AccountClientServiceImpl implements AccountClientService {
     @Override
     @Transactional
     public ClientDetailsResponseDTO changeEmail(Long clientId, ChangeClientEmailRequestDTO changeClientEmailRequestDTO) {
+        ensureTargetClientIsCurrentUser(clientId);
         log.debug("Attempting to change email for client with id: {}", clientId);
         Client client = validateClientAndPassword(clientId, changeClientEmailRequestDTO.currentPassword());
 
@@ -69,6 +75,7 @@ public class AccountClientServiceImpl implements AccountClientService {
     @Override
     @Transactional
     public ClientDetailsResponseDTO changePhoneNumber(Long clientId, ChangeClientPhoneNumberDTO changeClientPhoneNumberDTO) {
+        ensureTargetClientIsCurrentUser(clientId);
         log.debug("Attempting to change phone number for client with id: {}", clientId);
         Client client = validateClientAndPassword(clientId, changeClientPhoneNumberDTO.currentPassword());
 
@@ -82,6 +89,25 @@ public class AccountClientServiceImpl implements AccountClientService {
         client.setPhoneNumber(changeClientPhoneNumberDTO.newPhoneNumber());
         log.info("Changing phone number for client with id: {} successful", clientId);
         return mapToDetails(client);
+    }
+
+    private void ensureTargetClientIsCurrentUser(Long id){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if(authentication == null){
+            throw new IllegalArgumentException("Current user is not authenticated");
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if(principal instanceof SecurityClient securityClient){
+            Long clientId = securityClient.getId();
+            if(!clientId.equals(id)){
+                throw new AccessDeniedException("Invalid user id");
+            }
+        } else {
+            throw new IllegalStateException("Invalid user type in session");
+        }
     }
 
     private Client validateClientAndPassword(Long clientId, String currentPassword) {

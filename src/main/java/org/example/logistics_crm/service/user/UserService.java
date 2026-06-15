@@ -1,11 +1,10 @@
 package org.example.logistics_crm.service.user;
 
-import org.example.logistics_crm.dto.auth.RegistrationDTO;
-import org.example.logistics_crm.entity.user.User;
 import org.example.logistics_crm.dto.user.request.CreateUserRequestDTO;
 import org.example.logistics_crm.dto.user.request.UserSearchRequestDTO;
 import org.example.logistics_crm.dto.user.response.UserDetailsResponseDTO;
 import org.example.logistics_crm.dto.user.response.UserListResponseDTO;
+import org.example.logistics_crm.entity.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -31,4 +30,6 @@ public interface UserService {
     String login(String email, String password);
 
     String register(CreateUserRequestDTO createUserRequestDTO);
+
+    User getUserByEmail(String email);
 }

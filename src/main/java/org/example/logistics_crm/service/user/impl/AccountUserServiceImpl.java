@@ -1,19 +1,21 @@
 package org.example.logistics_crm.service.user.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.transaction.annotation.Transactional;
-import org.example.logistics_crm.entity.user.User;
-import org.example.logistics_crm.service.user.AccountUserService;
-import org.example.logistics_crm.service.user.UserService;
 import org.example.logistics_crm.dto.user.request.ChangeUserEmailRequestDTO;
 import org.example.logistics_crm.dto.user.request.ChangeUserPasswordRequestDTO;
 import org.example.logistics_crm.dto.user.request.ChangeUserPhoneNumberDTO;
 import org.example.logistics_crm.dto.user.response.UserDetailsResponseDTO;
+import org.example.logistics_crm.entity.user.User;
+import org.example.logistics_crm.security.SecurityUser;
+import org.example.logistics_crm.service.user.AccountUserService;
+import org.example.logistics_crm.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -32,10 +34,7 @@ public class AccountUserServiceImpl implements AccountUserService {
     @Transactional
     public UserDetailsResponseDTO changePassword(Long userId, ChangeUserPasswordRequestDTO changeUserPasswordRequestDTO) {
         log.debug("Attempting to change password for user with id: {}", userId);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-
-
+        ensureTargetUserIsCurrentUser(userId);
         User user = validateUserAndPassword(userId, changeUserPasswordRequestDTO.oldPassword());
 
         String newPassword = changeUserPasswordRequestDTO.newPassword();
@@ -58,6 +57,7 @@ public class AccountUserServiceImpl implements AccountUserService {
     @Transactional
     public UserDetailsResponseDTO changeEmail(Long userId, ChangeUserEmailRequestDTO changeUserEmailRequestDTO) {
         log.debug("Attempting to change email for user with id: {}", userId);
+        ensureTargetUserIsCurrentUser(userId);
         User user = validateUserAndPassword(userId, changeUserEmailRequestDTO.currentPassword());
 
         String newEmail = changeUserEmailRequestDTO.newEmail();
@@ -79,6 +79,7 @@ public class AccountUserServiceImpl implements AccountUserService {
     @Transactional
     public UserDetailsResponseDTO changePhoneNumber(Long userId, ChangeUserPhoneNumberDTO changeUserPhoneNumberDTO) {
         log.debug("Attempting to change phone number for user with id: {}", userId);
+        ensureTargetUserIsCurrentUser(userId);
         User user = validateUserAndPassword(userId, changeUserPhoneNumberDTO.currentPassword());
 
         String newPhoneNumber = changeUserPhoneNumberDTO.newPhoneNumber();
@@ -94,6 +95,26 @@ public class AccountUserServiceImpl implements AccountUserService {
         user.setPhoneNumber(newPhoneNumber);
         log.info("Changing phone number for user with id: {} successful", userId);
         return mapToDetails(user);
+    }
+
+    private void ensureTargetUserIsCurrentUser(Long userId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null) {
+            throw new IllegalStateException("No authentication provided");
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof SecurityUser securityUser) {
+            Long id = securityUser.getId();
+
+            if (!id.equals(userId)) {
+                throw new AccessDeniedException("Invalid user id");
+            }
+        } else {
+            throw new IllegalStateException("Invalid user type in session");
+        }
     }
 
     private User validateUserAndPassword(Long userId, String currentPassword) {

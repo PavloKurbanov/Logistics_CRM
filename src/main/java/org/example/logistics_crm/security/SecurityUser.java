@@ -15,10 +15,12 @@ import java.util.Objects;
 @NullMarked
 public class SecurityUser implements UserDetails {
     private final User user;
+    private final Long id;
 
     public SecurityUser(User user) {
         Objects.requireNonNull(user, "User must not be null");
         this.user = user;
+        this.id = user.getId();
     }
 
     @Override
@@ -62,5 +64,9 @@ public class SecurityUser implements UserDetails {
     @Override
     public String getUsername() {
         return user.getEmail();
+    }
+
+    public Long getId() {
+        return id;
     }
 }

@@ -187,6 +187,14 @@ public class UserServiceImpl implements UserService {
         return jwtService.generateTokenUser(newUser);
     }
 
+    @Override
+    public User getUserByEmail(String email) {
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("Email can't be null");
+        }
+        return userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
+    }
+
     private UserDetailsResponseDTO mapToDetails(User user) {
         return new UserDetailsResponseDTO(
                 user.getId(),

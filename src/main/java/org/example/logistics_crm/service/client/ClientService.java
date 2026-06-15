@@ -30,4 +30,5 @@ public interface ClientService {
     String login(String login, String password);
 
     String register(CreateClientRequestDTO createClientRequestDTO);
+
 }

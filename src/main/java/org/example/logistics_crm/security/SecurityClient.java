@@ -16,10 +16,12 @@ import java.util.Objects;
 public class SecurityClient implements UserDetails {
 
     private final Client client;
+    private final Long id;
 
     public SecurityClient(Client client) {
         Objects.requireNonNull(client, "Client must not be null");
         this.client = client;
+        this.id = client.getId();
     }
 
     @Override
@@ -60,5 +62,9 @@ public class SecurityClient implements UserDetails {
     @Override
     public String getUsername() {
         return client.getEmail();
+    }
+
+    public Long getId() {
+        return id;
     }
 }
